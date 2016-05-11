@@ -149,11 +149,12 @@ class Statement(Workflow, ModelSQL, ModelView):
     @classmethod
     def __register__(cls, module_name):
         TableHandler = backend.get('TableHandler')
-        cursor = Transaction().cursor
+        transaction = Transaction()
+        cursor = transaction.connection.cursor()
         sql_table = cls.__table__()
 
         # Migration from 1.8: new field company
-        table = TableHandler(cursor, cls, module_name)
+        table = TableHandler(cls, module_name)
         company_exist = table.column_exist('company')
 
         super(Statement, cls).__register__(module_name)
@@ -161,7 +162,7 @@ class Statement(Workflow, ModelSQL, ModelView):
         # Migration from 1.8: fill new field company
         if not company_exist:
             offset = 0
-            limit = cursor.IN_MAX
+            limit = transaction.database.IN_MAX
             statements = True
             while statements:
                 statements = cls.search([], offset=offset, limit=limit)
@@ -170,7 +171,7 @@ class Statement(Workflow, ModelSQL, ModelView):
                     cls.write([statement], {
                             'company': statement.journal.company.id,
                             })
-            table = TableHandler(cursor, cls, module_name)
+            table = TableHandler(cls, module_name)
             table.not_null_action('company', action='add')
 
         # Migration from 3.2: remove required on start/end balance
@@ -249,7 +250,7 @@ class Statement(Workflow, ModelSQL, ModelView):
             invoice_id2amount_to_pay = {}
             for invoice in invoices:
                 with Transaction().set_context(date=invoice.currency_date):
-                    if invoice.type in ('out_invoice', 'in_credit_note'):
+                    if invoice.type == 'out':
                         sign = -1
                     else:
                         sign = 1
@@ -436,7 +437,8 @@ class Statement(Workflow, ModelSQL, ModelView):
             to_write.append({
                     'move': move.id,
                     })
-        Line.write(*to_write)
+        if to_write:
+            Line.write(*to_write)
 
         move_lines = []
         for move, statement, lines in moves:

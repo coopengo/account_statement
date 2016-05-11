@@ -10,17 +10,17 @@ from trytond.transaction import Transaction
 from trytond.tools import grouped_slice, reduce_ids
 
 __all__ = ['Move']
-__metaclass__ = PoolMeta
 
 
 class Move:
+    __metaclass__ = PoolMeta
     __name__ = 'account.move'
 
     @classmethod
     def __register__(cls, module_name):
         pool = Pool()
         StatementLine = pool.get('account.statement.line')
-        cursor = Transaction().cursor
+        cursor = Transaction().connection.cursor()
         sql_table = cls.__table__()
 
         super(Move, cls).__register__(module_name)
