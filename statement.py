@@ -58,7 +58,6 @@ class Unequal(object):
 class Statement(Workflow, ModelSQL, ModelView):
     'Account Statement'
     __name__ = 'account.statement'
-
     name = fields.Char('Name', required=True)
     company = fields.Many2One('company.company', 'Company', required=True,
         select=True, states=_STATES, domain=[
@@ -329,11 +328,6 @@ class Statement(Workflow, ModelSQL, ModelView):
             Line = self._get_grouped_line()
             for key, lines in groupby(self.lines, key=self._group_key):
                 yield Line(**dict(key + (('lines', list(lines)),)))
-
-    @fields.depends('journal')
-    def on_change_with_validation(self, name=None):
-        if self.journal:
-            return self.journal.validation
 
     @classmethod
     def delete(cls, statements):
@@ -733,6 +727,7 @@ class Line(ModelSQL, ModelView):
             amount_second_currency=amount_second_currency,
             )
 
+    # need to override (client specific modules)
     def reset_remaining_line(self, from_line):
         self.invoice = None
 
