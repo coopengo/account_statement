@@ -4,378 +4,416 @@ msgstr "Content-Type: text/plain; charset=utf-8\n"
 
 msgctxt "error:account.statement.line:"
 msgid "Amount \"%s\" is greater than the amount to pay of invoice."
-msgstr "El importe \"%s\" es mayor que el importe a pagar de la factura."
+msgstr ""
 
 msgctxt "error:account.statement.line:"
 msgid "Amount should be a positive or negative value."
-msgstr "El importe debería ser un valor positivo o negativo."
+msgstr ""
 
 msgctxt "error:account.statement:"
 msgid "End Balance must be \"%s\"."
-msgstr "El saldo final debe ser \"%s\"."
+msgstr ""
 
 msgctxt "error:account.statement:"
 msgid "Number of Lines must be \"%s\"."
-msgstr "El número de líneas debe ser \"%s\"."
+msgstr ""
 
 msgctxt "error:account.statement:"
 msgid "Please provide debit and credit account on statement journal \"%s\"."
-msgstr "Añade una cuenta debe y haber en el diario de extracto \"%s\"."
+msgstr ""
 
 msgctxt "error:account.statement:"
 msgid "Statement \"%s\" must be cancelled before deletion."
-msgstr "Debe cancelar el extracto \"%s\" antes de borrarlo."
+msgstr ""
 
 msgctxt "error:account.statement:"
 msgid "There are paid invoices on draft statements."
-msgstr "Hay facturas pagadas en extractos en borrador."
+msgstr ""
 
 msgctxt "error:account.statement:"
 msgid "Total Amount must be \"%s\"."
-msgstr "El importe total debe ser \"%s\"."
+msgstr ""
 
+#, fuzzy
 msgctxt "field:account.statement,balance:"
 msgid "Balance"
-msgstr "Saldo"
+msgstr "ດຸນດ່ຽງ"
 
+#, fuzzy
 msgctxt "field:account.statement,company:"
 msgid "Company"
-msgstr "Empresa"
+msgstr "ຫ້ອງການ/ສຳນັກງານ"
 
 msgctxt "field:account.statement,create_date:"
 msgid "Create Date"
-msgstr "Fecha creación"
+msgstr "ວັນທີສ້າງ"
 
 msgctxt "field:account.statement,create_uid:"
 msgid "Create User"
-msgstr "Usuario creación"
+msgstr "ຜູ້ສ້າງ"
 
 msgctxt "field:account.statement,currency_digits:"
 msgid "Currency Digits"
-msgstr "Decimales de la moneda"
+msgstr "ເລກເສດສະກຸນເງິນ"
 
 msgctxt "field:account.statement,date:"
 msgid "Date"
-msgstr "Fecha"
+msgstr "ວັນທີ:"
 
 msgctxt "field:account.statement,end_balance:"
 msgid "End Balance"
-msgstr "Saldo final"
+msgstr "ຍອດຍົກໄປ"
 
 msgctxt "field:account.statement,id:"
 msgid "ID"
-msgstr "ID"
+msgstr "ເລດລຳດັບ"
 
 msgctxt "field:account.statement,journal:"
 msgid "Journal"
-msgstr "Diario"
+msgstr "ປຶ້ມບັນຊີປະຈຳວັນ"
 
 msgctxt "field:account.statement,lines:"
 msgid "Lines"
-msgstr "Líneas"
+msgstr "ລາຍການ"
 
 msgctxt "field:account.statement,name:"
 msgid "Name"
-msgstr "Nombre"
+msgstr "ຊື່"
 
 msgctxt "field:account.statement,number_of_lines:"
 msgid "Number of Lines"
-msgstr "Número de líneas"
+msgstr ""
 
 msgctxt "field:account.statement,rec_name:"
 msgid "Name"
-msgstr "Nombre"
+msgstr "ຊື່"
 
 msgctxt "field:account.statement,start_balance:"
 msgid "Start Balance"
-msgstr "Saldo inicial"
+msgstr "ຍອດຍົກມາ"
 
 msgctxt "field:account.statement,state:"
 msgid "State"
-msgstr "Estado"
+msgstr "ສະຖານະ"
 
 msgctxt "field:account.statement,total_amount:"
 msgid "Total Amount"
-msgstr "Importe"
+msgstr ""
 
 msgctxt "field:account.statement,validation:"
 msgid "Validation"
-msgstr "Validación"
+msgstr ""
 
 msgctxt "field:account.statement,write_date:"
 msgid "Write Date"
-msgstr "Fecha modificación"
+msgstr "ວັນທີບັນທຶກ"
 
 msgctxt "field:account.statement,write_uid:"
 msgid "Write User"
-msgstr "Usuario modificación"
+msgstr "ຜູ້ບັນທຶກ"
 
 msgctxt "field:account.statement.journal,company:"
 msgid "Company"
-msgstr "Empresa"
+msgstr "ສຳນັກງານ"
 
 msgctxt "field:account.statement.journal,create_date:"
 msgid "Create Date"
-msgstr "Fecha creación"
+msgstr "ວັນທີສ້າງ"
 
 msgctxt "field:account.statement.journal,create_uid:"
 msgid "Create User"
-msgstr "Usuario creación"
+msgstr "ຜູ້ສ້າງ"
 
 msgctxt "field:account.statement.journal,currency:"
 msgid "Currency"
-msgstr "Moneda"
+msgstr "ສະກຸນເງິນ"
 
 msgctxt "field:account.statement.journal,id:"
 msgid "ID"
-msgstr "ID"
+msgstr "ເລກລຳດັບ"
 
 msgctxt "field:account.statement.journal,journal:"
 msgid "Journal"
-msgstr "Diario"
+msgstr "ປຶ້ມບັນຊີປະຈຳວັນ"
 
 msgctxt "field:account.statement.journal,name:"
 msgid "Name"
-msgstr "Nombre"
+msgstr "ຊື່"
 
 msgctxt "field:account.statement.journal,rec_name:"
 msgid "Name"
-msgstr "Nombre"
+msgstr "ຊື່"
 
 msgctxt "field:account.statement.journal,validation:"
 msgid "Validation Type"
-msgstr "Tipo de validación"
+msgstr ""
 
 msgctxt "field:account.statement.journal,write_date:"
 msgid "Write Date"
-msgstr "Fecha modificación"
+msgstr "ວັນທີບັນທຶກ"
 
 msgctxt "field:account.statement.journal,write_uid:"
 msgid "Write User"
-msgstr "Usuario modificación"
+msgstr "ຜູ້ສ້າງ"
 
 msgctxt "field:account.statement.line,account:"
 msgid "Account"
-msgstr "Cuenta"
+msgstr "ບັນຊີ"
 
 msgctxt "field:account.statement.line,amount:"
 msgid "Amount"
-msgstr "Importe"
+msgstr "ມູນຄ່າ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,create_date:"
 msgid "Create Date"
-msgstr "Fecha creación"
+msgstr "ສ້າງວັນທີ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,create_uid:"
 msgid "Create User"
-msgstr "Usuario creación"
+msgstr "ສ້າງຜູ້ໃຊ້ງານ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,date:"
 msgid "Date"
-msgstr "Fecha"
+msgstr "ວັນທີ:"
 
+#, fuzzy
 msgctxt "field:account.statement.line,description:"
 msgid "Description"
-msgstr "Descripción"
+msgstr "ເນື້ອໃນລາຍການ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,id:"
 msgid "ID"
-msgstr "ID"
+msgstr "ເລດລຳດັບ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,invoice:"
 msgid "Invoice"
-msgstr "Factura"
+msgstr "ໃບເກັບເງິນພາສີທີ່ດິນ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,move:"
 msgid "Account Move"
-msgstr "Asiento contable"
+msgstr "ບັນຊີເຄື່ອນຍ້າຍ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,number:"
 msgid "Number"
-msgstr "Número"
+msgstr "ເລກທີ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,party:"
 msgid "Party"
-msgstr "Entidad"
+msgstr "ພາກສ່ວນ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,rec_name:"
 msgid "Name"
-msgstr "Nombre"
+msgstr "ຊື່"
 
+#, fuzzy
 msgctxt "field:account.statement.line,sequence:"
 msgid "Sequence"
-msgstr "Secuencia"
+msgstr "ລໍາດັບ"
 
 msgctxt "field:account.statement.line,statement:"
 msgid "Statement"
-msgstr "Extracto"
+msgstr ""
 
+msgctxt "field:account.statement.line,statement_state:"
+msgid "Statement State"
+msgstr ""
+
+#, fuzzy
 msgctxt "field:account.statement.line,write_date:"
 msgid "Write Date"
-msgstr "Fecha modificación"
+msgstr "ວັນທີບັນທຶກ"
 
+#, fuzzy
 msgctxt "field:account.statement.line,write_uid:"
 msgid "Write User"
-msgstr "Usuario modificación"
+msgstr "ສ້າງຜູ້ໃຊ້"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,amount:"
 msgid "Amount"
-msgstr "Importe"
+msgstr "ມູນຄ່າ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,create_date:"
 msgid "Create Date"
-msgstr "Fecha creación"
+msgstr "ສ້າງວັນທີ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,create_uid:"
 msgid "Create User"
-msgstr "Usuario creación"
+msgstr "ສ້າງຜູ້ໃຊ້ງານ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,currency:"
 msgid "Currency"
-msgstr "Moneda"
+msgstr "ສະກຸນເງິນ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,currency_digits:"
 msgid "Currency Digits"
-msgstr "Decimales de la moneda"
+msgstr "ໂຕເລກສະກຸນເງິນ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,date:"
 msgid "Date"
-msgstr "Fecha"
+msgstr "ວັນທີ:"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,id:"
 msgid "ID"
-msgstr "ID"
+msgstr "ເລດລຳດັບ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,journal:"
 msgid "Journal"
-msgstr "Diario"
+msgstr "ປຶ້ມບັນຊີປະຈຳວັນ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,move:"
 msgid "Move"
-msgstr "Asiento"
+msgstr "ເຄື່ອນໄຫວ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,number:"
 msgid "Number"
-msgstr "Número"
+msgstr "ເລກທີ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,party:"
 msgid "Party"
-msgstr "Entidad"
+msgstr "ພາກສ່ວນ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,rec_name:"
 msgid "Name"
-msgstr "Nombre"
+msgstr "ຊື່"
 
 msgctxt "field:account.statement.line.group,statement:"
 msgid "Statement"
-msgstr "Extracto"
+msgstr ""
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,write_date:"
 msgid "Write Date"
-msgstr "Fecha modificación"
+msgstr "ວັນທີບັນທຶກ"
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,write_uid:"
 msgid "Write User"
-msgstr "Usuario modificación"
+msgstr "ສ້າງຜູ້ໃຊ້"
 
 msgctxt "model:account.journal.type,name:journal_type_statement"
 msgid "Statement"
-msgstr "Extracto"
+msgstr ""
 
 msgctxt "model:account.statement,name:"
 msgid "Account Statement"
-msgstr "Extracto bancario"
+msgstr ""
 
 msgctxt "model:account.statement.journal,name:"
 msgid "Statement Journal"
-msgstr "Diario de extracto"
+msgstr ""
 
 msgctxt "model:account.statement.line,name:"
 msgid "Account Statement Line"
-msgstr "Línea de extracto bancario"
+msgstr ""
 
 msgctxt "model:account.statement.line.group,name:"
 msgid "Account Statement Line Group"
-msgstr "Grupo de líneas de extracto"
+msgstr ""
 
 msgctxt "model:ir.action,name:act_line_group_form"
 msgid "Statement Line Groups"
-msgstr "Grupos de líneas de extracto"
+msgstr ""
 
 msgctxt "model:ir.action,name:act_line_groups_form"
 msgid "Line Groups"
-msgstr "Grupos de líneas"
+msgstr ""
 
 msgctxt "model:ir.action,name:act_move_lines_form"
 msgid "Move Lines"
-msgstr "Apuntes"
+msgstr ""
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_moves_form"
 msgid "Moves"
-msgstr "Asientos"
+msgstr "ຕັດບັນຊີສາງ"
 
 msgctxt "model:ir.action,name:act_statement_form"
 msgid "Statements"
-msgstr "Todos los extractos"
+msgstr ""
 
 msgctxt "model:ir.action,name:act_statement_journal_form"
 msgid "Statement Journals"
-msgstr "Diarios de extracto"
+msgstr ""
 
 msgctxt "model:ir.action,name:act_statement_line_move"
 msgid "Statement Lines"
-msgstr "Líneas de extracto bancario"
+msgstr ""
 
 msgctxt "model:ir.action,name:act_statement_line_move_line"
 msgid "Statement Lines"
-msgstr "Líneas de extracto bancario"
+msgstr ""
 
 msgctxt "model:ir.action,name:report_statement"
 msgid "Statement"
-msgstr "Extracto"
+msgstr ""
 
+#, fuzzy
 msgctxt "model:ir.action.act_window.domain,name:act_statement_form_domain_all"
 msgid "All"
-msgstr "Todo"
+msgstr "ທັງໝົດ"
 
+#, fuzzy
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_draft"
 msgid "Draft"
-msgstr "Borrador"
+msgstr "ຮ່າງກຽມ"
 
+#, fuzzy
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_posted"
 msgid "Posted"
-msgstr "Contabilizado"
+msgstr "ແຈ້ງແລ້ວ"
 
+#, fuzzy
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_validated"
 msgid "Validated"
-msgstr "Validado"
+msgstr "ກວດສອບແລ້ວ"
 
 msgctxt "model:ir.ui.menu,name:menu_line_group_form"
 msgid "Statement Line Groups"
-msgstr "Grupos de líneas de extracto"
+msgstr ""
 
 msgctxt "model:ir.ui.menu,name:menu_statement_configuration"
 msgid "Statements"
-msgstr "Extractos"
+msgstr ""
 
 msgctxt "model:ir.ui.menu,name:menu_statement_form"
 msgid "Statements"
-msgstr "Todos los extractos"
+msgstr ""
 
 msgctxt "model:ir.ui.menu,name:menu_statement_journal_form"
 msgid "Statement Journals"
-msgstr "Diarios de extracto"
+msgstr ""
 
 msgctxt "model:ir.ui.menu,name:menu_statements"
 msgid "Statements"
-msgstr "Extractos"
+msgstr ""
 
 msgctxt "model:res.group,name:group_statement"
 msgid "Statement"
-msgstr "Extracto"
+msgstr ""
 
 #, fuzzy
 msgctxt "report:account.statement:"
@@ -385,154 +423,141 @@ msgstr "#"
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Amount"
-msgstr "Importe"
+msgstr "ມູນຄ່າ"
 
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Canceled"
-msgstr "Cancelado"
+msgstr "ຍົກເລີກແລ້ວ"
 
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Date"
-msgstr "Fecha"
+msgstr "ວັນທີ:"
 
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Date:"
-msgstr "Fecha"
+msgstr "ວັນທີ:"
 
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Description"
-msgstr "Descripción"
+msgstr "ເນື້ອໃນລາຍການ"
 
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Draft"
-msgstr "Borrador"
+msgstr "ຮ່າງກຽມ"
 
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Journal:"
-msgstr "Diario"
+msgstr "ປຶ້ມບັນຊີປະຈຳວັນ"
 
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Number"
-msgstr "Número"
+msgstr "ເລກທີ"
 
 #, fuzzy
 msgctxt "report:account.statement:"
 msgid "Party"
-msgstr "Entidad"
+msgstr "ພາກສ່ວນ"
+
+msgctxt "report:account.statement:"
+msgid "Statement"
+msgstr ""
 
 #, fuzzy
 msgctxt "report:account.statement:"
-msgid "Statement"
-msgstr "Extracto"
-
-msgctxt "report:account.statement:"
 msgid "Total"
-msgstr ""
+msgstr "ລວມທັງໝົດ"
 
+#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Canceled"
-msgstr "Cancelado"
+msgstr "ຍົກເລີກແລ້ວ"
 
+#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Draft"
-msgstr "Borrador"
+msgstr "ຮ່າງກຽມ"
 
+#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Posted"
-msgstr "Contabilizado"
+msgstr "ແຈ້ງແລ້ວ"
 
+#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Validated"
-msgstr "Validado"
+msgstr "ກວດສອບແລ້ວ"
 
+#, fuzzy
 msgctxt "selection:account.statement.journal,validation:"
 msgid "Amount"
-msgstr "Importe"
+msgstr "ມູນຄ່າ"
 
+#, fuzzy
 msgctxt "selection:account.statement.journal,validation:"
 msgid "Balance"
-msgstr "Saldo"
+msgstr "ດຸນດ່ຽງ"
 
 msgctxt "selection:account.statement.journal,validation:"
 msgid "Number of Lines"
-msgstr "Número de líneas"
+msgstr ""
 
 #, fuzzy
-msgctxt "view:account.statement.journal:"
-msgid "Statement Journal"
-msgstr "Diario de extracto"
+msgctxt "selection:account.statement.line,statement_state:"
+msgid "Canceled"
+msgstr "ຍົກເລີກແລ້ວ"
 
 #, fuzzy
-msgctxt "view:account.statement.journal:"
-msgid "Statement Journals"
-msgstr "Diarios de extracto"
+msgctxt "selection:account.statement.line,statement_state:"
+msgid "Draft"
+msgstr "ຮ່າງກຽມ"
 
 #, fuzzy
-msgctxt "view:account.statement.line.group:"
-msgid "Statement Line Group"
-msgstr "Grupos de líneas de extracto"
+msgctxt "selection:account.statement.line,statement_state:"
+msgid "Posted"
+msgstr "ແຈ້ງແລ້ວ"
 
 #, fuzzy
-msgctxt "view:account.statement.line.group:"
-msgid "Statement Line Groups"
-msgstr "Grupos de líneas de extracto"
+msgctxt "selection:account.statement.line,statement_state:"
+msgid "Validated"
+msgstr "ກວດສອບແລ້ວ"
 
 #, fuzzy
 msgctxt "view:account.statement.line:"
 msgid "Amount"
-msgstr "Importe"
-
-#, fuzzy
-msgctxt "view:account.statement.line:"
-msgid "Statement Line"
-msgstr "Líneas de extracto bancario"
-
-#, fuzzy
-msgctxt "view:account.statement.line:"
-msgid "Statement Lines"
-msgstr "Líneas de extracto bancario"
+msgstr "ມູນຄ່າ"
 
 #, fuzzy
 msgctxt "view:account.statement:"
 msgid "Cancel"
-msgstr "Cancelado"
+msgstr "ຍົກເລີກ"
 
 #, fuzzy
 msgctxt "view:account.statement:"
 msgid "Draft"
-msgstr "Borrador"
+msgstr "ຮ່າງກຽມ"
 
+#, fuzzy
 msgctxt "view:account.statement:"
 msgid "Other Info"
-msgstr ""
+msgstr "ຂໍ້ມູນອື່ນໆ"
 
+#, fuzzy
 msgctxt "view:account.statement:"
 msgid "Post"
-msgstr ""
+msgstr "ປະກາດ"
 
-#, fuzzy
-msgctxt "view:account.statement:"
-msgid "Statement"
-msgstr "Extracto"
-
-#, fuzzy
 msgctxt "view:account.statement:"
 msgid "Statement Lines"
-msgstr "Líneas de extracto bancario"
-
-#, fuzzy
-msgctxt "view:account.statement:"
-msgid "Statements"
-msgstr "Todos los extractos"
+msgstr ""
 
 #, fuzzy
 msgctxt "view:account.statement:"
 msgid "Validate"
-msgstr "Validado"
+msgstr "ກວດສອບ"

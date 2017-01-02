@@ -206,8 +206,13 @@ msgctxt "field:account.statement.line,sequence:"
 msgid "Sequence"
 msgstr ""
 
+#, fuzzy
 msgctxt "field:account.statement.line,statement:"
 msgid "Statement"
+msgstr "Statement"
+
+msgctxt "field:account.statement.line,statement_state:"
+msgid "Statement State"
 msgstr ""
 
 msgctxt "field:account.statement.line,write_date:"
@@ -250,9 +255,10 @@ msgctxt "field:account.statement.line.group,journal:"
 msgid "Journal"
 msgstr ""
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,move:"
 msgid "Move"
-msgstr ""
+msgstr "Moves"
 
 msgctxt "field:account.statement.line.group,number:"
 msgid "Number"
@@ -266,9 +272,10 @@ msgctxt "field:account.statement.line.group,rec_name:"
 msgid "Name"
 msgstr ""
 
+#, fuzzy
 msgctxt "field:account.statement.line.group,statement:"
 msgid "Statement"
-msgstr ""
+msgstr "Statement"
 
 msgctxt "field:account.statement.line.group,write_date:"
 msgid "Write Date"
@@ -280,15 +287,16 @@ msgstr ""
 
 msgctxt "model:account.journal.type,name:journal_type_statement"
 msgid "Statement"
-msgstr ""
+msgstr "Statement"
 
 msgctxt "model:account.statement,name:"
 msgid "Account Statement"
 msgstr ""
 
+#, fuzzy
 msgctxt "model:account.statement.journal,name:"
 msgid "Statement Journal"
-msgstr ""
+msgstr "Statement Journals"
 
 msgctxt "model:account.statement.line,name:"
 msgid "Account Statement Line"
@@ -300,87 +308,86 @@ msgstr ""
 
 msgctxt "model:ir.action,name:act_line_group_form"
 msgid "Statement Line Groups"
-msgstr ""
+msgstr "Statement Line Groups"
 
 msgctxt "model:ir.action,name:act_line_groups_form"
 msgid "Line Groups"
-msgstr ""
+msgstr "Line Groups"
 
 msgctxt "model:ir.action,name:act_move_lines_form"
 msgid "Move Lines"
-msgstr ""
+msgstr "Move Lines"
 
 msgctxt "model:ir.action,name:act_moves_form"
 msgid "Moves"
-msgstr ""
+msgstr "Moves"
 
 msgctxt "model:ir.action,name:act_statement_form"
 msgid "Statements"
-msgstr ""
+msgstr "Statements"
 
 msgctxt "model:ir.action,name:act_statement_journal_form"
 msgid "Statement Journals"
-msgstr ""
+msgstr "Statement Journals"
 
 msgctxt "model:ir.action,name:act_statement_line_move"
 msgid "Statement Lines"
-msgstr ""
+msgstr "Statement Lines"
 
 msgctxt "model:ir.action,name:act_statement_line_move_line"
 msgid "Statement Lines"
-msgstr ""
+msgstr "Statement Lines"
 
 msgctxt "model:ir.action,name:report_statement"
 msgid "Statement"
-msgstr ""
+msgstr "Statement"
 
 msgctxt "model:ir.action.act_window.domain,name:act_statement_form_domain_all"
 msgid "All"
-msgstr ""
+msgstr "All"
 
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_draft"
 msgid "Draft"
-msgstr ""
+msgstr "Draft"
 
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_posted"
 msgid "Posted"
-msgstr ""
+msgstr "Posted"
 
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_validated"
 msgid "Validated"
-msgstr ""
+msgstr "Validated"
 
 msgctxt "model:ir.ui.menu,name:menu_line_group_form"
 msgid "Statement Line Groups"
-msgstr ""
+msgstr "Statement Line Groups"
 
 msgctxt "model:ir.ui.menu,name:menu_statement_configuration"
 msgid "Statements"
-msgstr ""
+msgstr "Statements"
 
 msgctxt "model:ir.ui.menu,name:menu_statement_form"
 msgid "Statements"
-msgstr ""
+msgstr "Statements"
 
 msgctxt "model:ir.ui.menu,name:menu_statement_journal_form"
 msgid "Statement Journals"
-msgstr ""
+msgstr "Statement Journals"
 
 msgctxt "model:ir.ui.menu,name:menu_statements"
 msgid "Statements"
-msgstr ""
+msgstr "Statements"
 
 msgctxt "model:res.group,name:group_statement"
 msgid "Statement"
-msgstr ""
+msgstr "Statement"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "#"
-msgstr "#"
+msgstr ""
 
 msgctxt "report:account.statement:"
 msgid "Amount"
@@ -402,9 +409,10 @@ msgctxt "report:account.statement:"
 msgid "Description"
 msgstr ""
 
+#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Draft"
-msgstr ""
+msgstr "Draft"
 
 msgctxt "report:account.statement:"
 msgid "Journal:"
@@ -418,9 +426,10 @@ msgctxt "report:account.statement:"
 msgid "Party"
 msgstr ""
 
+#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Statement"
-msgstr ""
+msgstr "Statement"
 
 msgctxt "report:account.statement:"
 msgid "Total"
@@ -430,17 +439,20 @@ msgctxt "selection:account.statement,state:"
 msgid "Canceled"
 msgstr ""
 
+#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Draft"
-msgstr ""
+msgstr "Draft"
 
+#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Posted"
-msgstr ""
+msgstr "Posted"
 
+#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Validated"
-msgstr ""
+msgstr "Validated"
 
 msgctxt "selection:account.statement.journal,validation:"
 msgid "Amount"
@@ -454,41 +466,37 @@ msgctxt "selection:account.statement.journal,validation:"
 msgid "Number of Lines"
 msgstr ""
 
-msgctxt "view:account.statement.journal:"
-msgid "Statement Journal"
+msgctxt "selection:account.statement.line,statement_state:"
+msgid "Canceled"
 msgstr ""
 
-msgctxt "view:account.statement.journal:"
-msgid "Statement Journals"
-msgstr ""
+#, fuzzy
+msgctxt "selection:account.statement.line,statement_state:"
+msgid "Draft"
+msgstr "Draft"
 
-msgctxt "view:account.statement.line.group:"
-msgid "Statement Line Group"
-msgstr ""
+#, fuzzy
+msgctxt "selection:account.statement.line,statement_state:"
+msgid "Posted"
+msgstr "Posted"
 
-msgctxt "view:account.statement.line.group:"
-msgid "Statement Line Groups"
-msgstr ""
+#, fuzzy
+msgctxt "selection:account.statement.line,statement_state:"
+msgid "Validated"
+msgstr "Validated"
 
 msgctxt "view:account.statement.line:"
 msgid "Amount"
-msgstr ""
-
-msgctxt "view:account.statement.line:"
-msgid "Statement Line"
-msgstr ""
-
-msgctxt "view:account.statement.line:"
-msgid "Statement Lines"
 msgstr ""
 
 msgctxt "view:account.statement:"
 msgid "Cancel"
 msgstr ""
 
+#, fuzzy
 msgctxt "view:account.statement:"
 msgid "Draft"
-msgstr ""
+msgstr "Draft"
 
 msgctxt "view:account.statement:"
 msgid "Other Info"
@@ -498,18 +506,12 @@ msgctxt "view:account.statement:"
 msgid "Post"
 msgstr ""
 
-msgctxt "view:account.statement:"
-msgid "Statement"
-msgstr ""
-
+#, fuzzy
 msgctxt "view:account.statement:"
 msgid "Statement Lines"
-msgstr ""
+msgstr "Statement Lines"
 
-msgctxt "view:account.statement:"
-msgid "Statements"
-msgstr ""
-
+#, fuzzy
 msgctxt "view:account.statement:"
 msgid "Validate"
-msgstr ""
+msgstr "Validated"

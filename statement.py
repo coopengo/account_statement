@@ -6,9 +6,9 @@ from itertools import groupby
 
 from sql import Null
 from sql.aggregate import Max, Sum
-from sql.conditionals import Case
 
-from trytond.model import Workflow, ModelView, ModelSQL, fields, Check
+from trytond.model import Workflow, ModelView, ModelSQL, fields, Check, \
+    sequence_ordered
 from trytond.pyson import Eval, If, Bool
 from trytond.transaction import Transaction
 from trytond import backend
@@ -40,6 +40,13 @@ _NUMBER_STATES.update({
         'required': Eval('validation', '').in_(['number_of_lines']),
         })
 _NUMBER_DEPENDS = _DEPENDS + ['validation']
+
+STATES = [
+    ('draft', 'Draft'),
+    ('validated', 'Validated'),
+    ('cancel', 'Canceled'),
+    ('posted', 'Posted'),
+    ]
 
 
 class Unequal(object):
@@ -99,12 +106,7 @@ class Statement(Workflow, ModelSQL, ModelView):
             'readonly': (Eval('state') != 'draft') | ~Eval('journal'),
             },
         depends=['state', 'journal'])
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('validated', 'Validated'),
-        ('cancel', 'Canceled'),
-        ('posted', 'Posted'),
-        ], 'State', readonly=True, select=True)
+    state = fields.Selection(STATES, 'State', readonly=True, select=True)
     validation = fields.Function(fields.Char('Validation'),
         'on_change_with_validation')
 
@@ -212,6 +214,7 @@ class Statement(Workflow, ModelSQL, ModelView):
                 ('journal', '=', self.journal.id),
                 ], order=[
                 ('date', 'DESC'),
+                ('id', 'DESC'),
                 ], limit=1)
         if not statements:
             return
@@ -521,23 +524,33 @@ class Statement(Workflow, ModelSQL, ModelView):
         StatementLine.delete_move(lines)
 
 
-class Line(ModelSQL, ModelView):
+class Line(sequence_ordered(), ModelSQL, ModelView):
     'Account Statement Line'
     __name__ = 'account.statement.line'
+    _states = {
+        'readonly': Eval('statement_state') != 'draft',
+        }
+    _depends = ['statement_state']
+
     statement = fields.Many2One('account.statement', 'Statement',
-            required=True, ondelete='CASCADE')
-    sequence = fields.Integer('Sequence')
+        required=True, ondelete='CASCADE', states=_states, depends=_depends)
+    statement_state = fields.Function(
+        fields.Selection(STATES, 'Statement State'),
+        'on_change_with_statement_state')
     number = fields.Char('Number')
-    date = fields.Date('Date', required=True)
+    date = fields.Date('Date', required=True, states=_states, depends=_depends)
     amount = fields.Numeric('Amount', required=True,
-        digits=(16, Eval('_parent_statement', {}).get('currency_digits', 2)))
-    party = fields.Many2One('party.party', 'Party')
+        digits=(16, Eval('_parent_statement', {}).get('currency_digits', 2)),
+        states=_states, depends=_depends)
+    party = fields.Many2One('party.party', 'Party',
+        states=_states, depends=_depends)
     account = fields.Many2One('account.account', 'Account', required=True,
         domain=[
             ('company', '=', Eval('_parent_statement', {}).get('company', 0)),
             ('kind', '!=', 'view'),
-            ])
-    description = fields.Char('Description')
+            ],
+        states=_states, depends=_depends)
+    description = fields.Char('Description', states=_states, depends=_depends)
     move = fields.Many2One('account.move', 'Account Move', readonly=True,
         domain=[
             ('company', '=', Eval('_parent_statement', {}).get('company', -1)),
@@ -550,12 +563,14 @@ class Line(ModelSQL, ModelView):
                 ('state', '=', 'posted'),
                 ('state', '!=', '')),
             ],
-        depends=['party', 'account'])
+        states=_states,
+        depends=['party', 'account'] + _depends)
+
+    del _states, _depends
 
     @classmethod
     def __setup__(cls):
         super(Line, cls).__setup__()
-        cls._order.insert(0, ('sequence', 'ASC'))
         cls._error_messages.update({
                 'amount_greater_invoice_amount_to_pay': ('Amount "%s" is '
                     'greater than the amount to pay of invoice.'),
@@ -566,10 +581,10 @@ class Line(ModelSQL, ModelView):
                 'Amount should be a positive or negative value.'),
             ]
 
-    @staticmethod
-    def order_sequence(tables):
-        table, _ = tables[None]
-        return [Case((table.sequence == Null, 0), else_=1), table.sequence]
+    @fields.depends('statement', '_parent_statement.state')
+    def on_change_with_statement_state(self, name=None):
+        if self.statement:
+            return self.statement.state
 
     @staticmethod
     def default_amount():
