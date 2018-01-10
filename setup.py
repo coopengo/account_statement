@@ -76,7 +76,7 @@ setup(name=name,
     package_data={
         'trytond.modules.account_statement': (info.get('xml', [])
             + ['tryton.cfg', 'view/*.xml', 'locale/*.po', 'tests/*.rst',
-                'statement.odt']),
+                '*.fodt']),
         },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -103,9 +103,9 @@ setup(name=name,
         'Natural Language :: Spanish',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Office/Business',
@@ -125,5 +125,6 @@ setup(name=name,
     use_2to3=True,
     convert_2to3_doctests=[
         'tests/scenario_account_statement.rst',
+        'tests/scenario_statement_origin.rst',
         ],
     )

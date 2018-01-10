@@ -1,8 +1,8 @@
-Version 4.4.2 - 2017-11-08
+Version 4.6.0 - 2017-10-30
 * Bug fixes (see mercurial logs for details)
-
-Version 4.4.1 - 2017-07-01
-* Bug fixes (see mercurial logs for details)
+* Add generic wizard to import statement from files
+* Add statement origins
+* Unreconcile lines when cancelling statement
 
 Version 4.4.0 - 2017-05-01
 * Bug fixes (see mercurial logs for details)
