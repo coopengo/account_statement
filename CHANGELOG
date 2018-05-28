@@ -1,3 +1,5 @@
++* Use new API for Line.reconcile
+
 Version 4.6.0 - 2017-10-30
 * Bug fixes (see mercurial logs for details)
 * Add generic wizard to import statement from files
