@@ -20,7 +20,9 @@ from trytond.modules.company import CompanyReport
 
 __all__ = ['Statement', 'Line', 'LineGroup',
     'Origin', 'OriginInformation',
-    'ImportStatementStart', 'ImportStatement', 'StatementReport']
+    'ImportStatementStart', 'ImportStatement',
+    'ReconcileStatement',
+    'StatementReport']
 
 _STATES = {'readonly': Eval('state') != 'draft'}
 _DEPENDS = ['state']
@@ -131,6 +133,8 @@ class Statement(Workflow, ModelSQL, ModelView):
     state = fields.Selection(STATES, 'State', readonly=True, select=True)
     validation = fields.Function(fields.Char('Validation'),
         'on_change_with_validation')
+    to_reconcile = fields.Function(
+        fields.Boolean("To Reconcile"), 'get_to_reconcile')
 
     @classmethod
     def __setup__(cls):
@@ -160,15 +164,24 @@ class Statement(Workflow, ModelSQL, ModelView):
         cls._buttons.update({
                 'draft': {
                     'invisible': Eval('state') != 'cancel',
+                    'depends': ['state'],
                     },
                 'validate_statement': {
                     'invisible': Eval('state') != 'draft',
+                    'depends': ['state'],
                     },
                 'post': {
                     'invisible': Eval('state') != 'validated',
+                    'depends': ['state'],
                     },
                 'cancel': {
                     'invisible': ~Eval('state').in_(['draft', 'validated']),
+                    'depends': ['state'],
+                    },
+                'reconcile': {
+                    'invisible': Eval('state').in_(['draft', 'cancel']),
+                    'readonly': ~Eval('to_reconcile'),
+                    'depends': ['state', 'to_reconcile'],
                     },
                 })
 
@@ -264,62 +277,78 @@ class Statement(Workflow, ModelSQL, ModelView):
         return ((getattr(self, 'end_balance', 0) or 0)
             - (getattr(self, 'start_balance', 0) or 0))
 
-    @fields.depends('lines', 'journal')
+    @fields.depends('lines', 'journal', 'company')
     def on_change_lines(self):
         pool = Pool()
-        Currency = pool.get('currency.currency')
         Line = pool.get('account.statement.line')
-        if self.journal and self.lines:
-            invoices = set()
-            for line in self.lines:
-                if getattr(line, 'invoice', None):
-                    invoices.add(line.invoice)
-            invoice_id2amount_to_pay = {}
-            for invoice in invoices:
-                with Transaction().set_context(date=invoice.currency_date):
-                    if invoice.type == 'out':
-                        sign = -1
-                    else:
-                        sign = 1
-                    invoice_id2amount_to_pay[invoice.id] = sign * (
-                        Currency.compute(invoice.currency,
-                            invoice.amount_to_pay, self.journal.currency))
+        if not self.journal or not self.lines or not self.company:
+            return
+        if self.journal.currency != self.company.currency:
+            return
 
-            lines = list(self.lines)
-            line_offset = 0
-            for index, line in enumerate(self.lines or []):
-                if getattr(line, 'invoice', None) and line.id:
-                    amount_to_pay = invoice_id2amount_to_pay[line.invoice.id]
-                    if (not self.journal.currency.is_zero(amount_to_pay)
-                            and getattr(line, 'amount', None)
-                            and (line.amount >= 0) == (amount_to_pay <= 0)):
-                        if abs(line.amount) > abs(amount_to_pay):
-                            new_line = Line()
-                            for field_name, field in Line._fields.iteritems():
-                                if field_name == 'id':
-                                    continue
-                                try:
-                                    setattr(new_line, field_name,
-                                        getattr(line, field_name))
-                                except AttributeError:
-                                    pass
-                            new_line.amount = line.amount + amount_to_pay
-                            new_line.reset_remaining_line(line)
-                            line_offset += 1
-                            lines.insert(index + line_offset, new_line)
-                            invoice_id2amount_to_pay[line.invoice.id] = 0
-                            line.amount = amount_to_pay.copy_sign(line.amount)
-                        else:
-                            invoice_id2amount_to_pay[line.invoice.id] = (
-                                line.amount + amount_to_pay)
+        invoices = set()
+        for line in self.lines:
+            if (getattr(line, 'invoice', None)
+                    and line.invoice.currency == self.company.currency):
+                invoices.add(line.invoice)
+        invoice_id2amount_to_pay = {}
+        for invoice in invoices:
+            if invoice.type == 'out':
+                sign = -1
+            else:
+                sign = 1
+            invoice_id2amount_to_pay[invoice.id] = sign * invoice.amount_to_pay
+
+        lines = list(self.lines)
+        line_offset = 0
+        for index, line in enumerate(self.lines or []):
+            if getattr(line, 'invoice', None) and line.id:
+                amount_to_pay = invoice_id2amount_to_pay[line.invoice.id]
+                if (amount_to_pay
+                        and getattr(line, 'amount', None)
+                        and (line.amount >= 0) == (amount_to_pay <= 0)):
+                    if abs(line.amount) > abs(amount_to_pay):
+                        new_line = Line()
+                        for field_name, field in Line._fields.iteritems():
+                            if field_name == 'id':
+                                continue
+                            try:
+                                setattr(new_line, field_name,
+                                    getattr(line, field_name))
+                            except AttributeError:
+                                pass
+                        new_line.amount = line.amount + amount_to_pay
+                        new_line.reset_remaining_line(line)
+                        line_offset += 1
+                        lines.insert(index + line_offset, new_line)
+                        invoice_id2amount_to_pay[line.invoice.id] = 0
+                        line.amount = amount_to_pay.copy_sign(line.amount)
+
                     else:
-                        line.invoice = None
-            self.lines = lines
+                        invoice_id2amount_to_pay[line.invoice.id] = (
+                            line.amount + amount_to_pay)
+                else:
+                    line.invoice = None
+        self.lines = lines
 
     @fields.depends('journal')
     def on_change_with_validation(self, name=None):
         if self.journal:
             return self.journal.validation
+
+    def get_to_reconcile(self, name=None):
+        return bool(self.lines_to_reconcile)
+
+    @property
+    def lines_to_reconcile(self):
+        lines = []
+        for line in self.lines:
+            if line.move:
+                for move_line in line.move.lines:
+                    if (move_line.account.reconcile
+                            and not move_line.reconciliation):
+                        lines.append(move_line)
+        return lines
 
     def _group_key(self, line):
         key = (
@@ -382,12 +411,8 @@ class Statement(Workflow, ModelSQL, ModelView):
         end_balance = (self.start_balance
             + sum(l.amount for l in self.lines))
         if end_balance != self.end_balance:
-            lang, = Lang.search([
-                    ('code', '=', Transaction().language),
-                    ])
-            amount = Lang.format(lang,
-                '%.' + str(self.journal.currency.digits) + 'f',
-                end_balance, True)
+            lang = Lang.get()
+            amount = lang.currency(end_balance, self.journal.currency)
             self.raise_user_error('wrong_end_balance', amount)
 
     def validate_amount(self):
@@ -396,12 +421,8 @@ class Statement(Workflow, ModelSQL, ModelView):
 
         amount = sum(l.amount for l in self.lines)
         if amount != self.total_amount:
-            lang, = Lang.search([
-                    ('code', '=', Transaction().language),
-                    ])
-            amount = Lang.format(lang,
-                '%.' + str(self.journal.currency.digits) + 'f',
-                amount, True)
+            lang = Lang.get()
+            amount = lang.currency(amount, self.journal.currency)
             self.raise_user_error('wrong_total_amount', amount)
 
     def validate_number_of_lines(self):
@@ -565,6 +586,11 @@ class Statement(Workflow, ModelSQL, ModelView):
         lines = [l for s in statements for l in s.lines]
         StatementLine.delete_move(lines)
 
+    @classmethod
+    @ModelView.button_action('account_statement.act_reconcile')
+    def reconcile(cls, statements):
+        pass
+
 
 def origin_mixin(_states, _depends):
     class Mixin:
@@ -669,10 +695,6 @@ class Line(
                     })
             cls.date.depends.append('origin')
         cls.account.required = True
-        cls._error_messages.update({
-                'amount_greater_invoice_amount_to_pay': ('Amount "%s" is '
-                    'greater than the amount to pay of invoice.'),
-                })
         t = cls.__table__()
         cls._sql_constraints += [
             ('check_statement_line_amount', Check(t, t.amount != 0),
@@ -1090,6 +1112,22 @@ class ImportStatement(Wizard):
         if len(statements) == 1:
             action['views'].reverse()
         return action, data
+
+
+class ReconcileStatement(Wizard):
+    "Statement Reconcile"
+    __name__ = 'account.statement.reconcile'
+    start = StateAction('account.act_reconcile')
+
+    def do_start(self, action):
+        pool = Pool()
+        Statement = pool.get('account.statement')
+        statements = Statement.browse(Transaction().context['active_ids'])
+        lines = sum((map(int, s.lines_to_reconcile) for s in statements), [])
+        return action, {
+            'model': 'account.move.line',
+            'ids': lines,
+            }
 
 
 class StatementReport(CompanyReport):
