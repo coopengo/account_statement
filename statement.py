@@ -303,6 +303,8 @@ class Statement(Workflow, ModelSQL, ModelView):
         line_offset = 0
         for index, line in enumerate(self.lines or []):
             if getattr(line, 'invoice', None) and line.id:
+                if line.invoice.id not in invoice_id2amount_to_pay:
+                    continue
                 amount_to_pay = invoice_id2amount_to_pay[line.invoice.id]
                 if (amount_to_pay
                         and getattr(line, 'amount', None)
@@ -893,8 +895,8 @@ class Line(
         Reconciliation = pool.get('account.move.reconciliation')
 
         reconciliations = [l.reconciliation
-            for line in lines for l in line.move.lines
-            if line.move and l.reconciliation]
+            for line in lines if line.move
+            for l in line.move.lines if l.reconciliation]
         Reconciliation.delete(reconciliations)
         Move.delete(list({l.move for l in lines if l.move}))
 
@@ -1123,7 +1125,8 @@ class ReconcileStatement(Wizard):
         pool = Pool()
         Statement = pool.get('account.statement')
         statements = Statement.browse(Transaction().context['active_ids'])
-        lines = sum((map(int, s.lines_to_reconcile) for s in statements), [])
+        lines = sum(([int(l) for l in s.lines_to_reconcile]
+                for s in statements), [])
         return action, {
             'model': 'account.move.line',
             'ids': lines,
