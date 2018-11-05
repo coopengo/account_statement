@@ -13,7 +13,6 @@ from trytond.model import Workflow, ModelView, ModelSQL, fields, Check, \
     sequence_ordered, DictSchemaMixin
 from trytond.pyson import Eval, If, Bool
 from trytond.transaction import Transaction
-from trytond import backend
 from trytond.pool import Pool
 from trytond.wizard import Wizard, StateView, StateAction, Button
 from trytond.modules.company import CompanyReport
@@ -148,8 +147,6 @@ class Statement(Workflow, ModelSQL, ModelView):
                     'deletion.'),
                 'paid_invoice_draft_statement': ('There are paid invoices on '
                     'draft statements.'),
-                'debit_credit_account_statement_journal': ('Please provide '
-                    'debit and credit account on statement journal "%s".'),
                 'post_with_pending_amount': ('Origin line "%(origin)s" '
                     'of statement "%(statement)s" still has a pending amount '
                     'of "%(amount)s".'),
@@ -187,31 +184,12 @@ class Statement(Workflow, ModelSQL, ModelView):
 
     @classmethod
     def __register__(cls, module_name):
-        TableHandler = backend.get('TableHandler')
         transaction = Transaction()
         cursor = transaction.connection.cursor()
         sql_table = cls.__table__()
 
-        # Migration from 1.8: new field company
-        table = TableHandler(cls, module_name)
-        company_exist = table.column_exist('company')
-
         super(Statement, cls).__register__(module_name)
-
-        # Migration from 1.8: fill new field company
-        if not company_exist:
-            offset = 0
-            limit = transaction.database.IN_MAX
-            statements = True
-            while statements:
-                statements = cls.search([], offset=offset, limit=limit)
-                offset += limit
-                for statement in statements:
-                    cls.write([statement], {
-                            'company': statement.journal.company.id,
-                            })
-            table = TableHandler(cls, module_name)
-            table.not_null_action('company', action='add')
+        table = cls.__table_handler__(module_name)
 
         # Migration from 3.2: remove required on start/end balance
         table.not_null_action('start_balance', action='remove')
@@ -362,20 +340,21 @@ class Statement(Workflow, ModelSQL, ModelView):
 
     def _get_grouped_line(self):
         "Return Line class for grouped lines"
-        assert self.lines
+        lines = self.origins or self.lines
+        assert lines
 
-        keys = [k[0] for k in self._group_key(self.lines[0])]
+        keys = [k[0] for k in self._group_key(lines[0])]
 
         class Line(namedtuple('Line', keys + ['lines'])):
 
             @property
             def amount(self):
-                return sum((l.amount for l in self.lines))
+                return sum((l.amount for l in lines))
 
             @property
             def descriptions(self):
                 done = set()
-                for line in self.lines:
+                for line in lines:
                     if line.description and line.description not in done:
                         done.add(line.description)
                         yield line.description
@@ -384,12 +363,14 @@ class Statement(Workflow, ModelSQL, ModelView):
     @property
     def grouped_lines(self):
         if self.origins:
-            for origin in self.origins:
-                yield origin
+            lines = self.origins
         elif self.lines:
-            Line = self._get_grouped_line()
-            for key, lines in groupby(self.lines, key=self._group_key):
-                yield Line(**dict(key + (('lines', list(lines)),)))
+            lines = self.lines
+        else:
+            return
+        Line = self._get_grouped_line()
+        for key, lines in groupby(lines, key=self._group_key):
+            yield Line(**dict(key + (('lines', list(lines)),)))
 
     @classmethod
     def delete(cls, statements):
@@ -531,15 +512,6 @@ class Statement(Workflow, ModelSQL, ModelView):
         pool = Pool()
         MoveLine = pool.get('account.move.line')
 
-        if amount < 0:
-            account = self.journal.journal.debit_account
-        else:
-            account = self.journal.journal.credit_account
-
-        if not account:
-            self.raise_user_error('debit_credit_account_statement_journal',
-                (self.journal.rec_name,))
-
         if self.journal.currency != self.company.currency:
             second_currency = self.journal.currency
             amount_second_currency *= -1
@@ -556,7 +528,7 @@ class Statement(Workflow, ModelSQL, ModelView):
         return MoveLine(
             debit=abs(amount) if amount < 0 else 0,
             credit=abs(amount) if amount > 0 else 0,
-            account=account,
+            account=self.journal.account,
             second_currency=second_currency,
             amount_second_currency=amount_second_currency,
             description=description,
@@ -622,7 +594,10 @@ def origin_mixin(_states, _depends):
                 ('company', '=', Eval('company', 0)),
                 ('kind', '!=', 'view'),
                 ],
-            states=_states, depends=_depends + ['company'])
+            context={
+                'date': Eval('date'),
+                },
+            states=_states, depends=_depends + ['company', 'date'])
         description = fields.Char(
             "Description", states=_states, depends=_depends)
 
@@ -707,14 +682,15 @@ class Line(
     def default_amount():
         return Decimal(0)
 
-    @fields.depends('amount', 'party', 'invoice')
+    @fields.depends('amount', 'party', 'invoice', 'date')
     def on_change_party(self):
         if self.party:
             if self.amount:
-                if self.amount > Decimal("0.0"):
-                    self.account = self.party.account_receivable_used
-                else:
-                    self.account = self.party.account_payable_used
+                with Transaction().set_context(date=self.date):
+                    if self.amount > Decimal("0.0"):
+                        self.account = self.party.account_receivable_used
+                    else:
+                        self.account = self.party.account_payable_used
 
         if self.invoice:
             if self.party:
@@ -724,20 +700,21 @@ class Line(
                 self.invoice = None
 
     @fields.depends('amount', 'party', 'account', 'invoice', 'statement',
-        '_parent_statement.journal')
+        'date', '_parent_statement.journal')
     def on_change_amount(self):
         Currency = Pool().get('currency.currency')
         if self.party:
-            if self.account and self.account not in (
-                    self.party.account_receivable_used,
-                    self.party.account_payable_used):
-                # The user has entered a non-default value, we keep it.
-                pass
-            elif self.amount:
-                if self.amount > Decimal("0.0"):
-                    self.account = self.party.account_receivable_used
-                else:
-                    self.account = self.party.account_payable_used
+            with Transaction().set_context(date=self.date):
+                if self.account and self.account not in (
+                        self.party.account_receivable_used,
+                        self.party.account_payable_used):
+                    # The user has entered a non-default value, we keep it.
+                    pass
+                elif self.amount:
+                    if self.amount > Decimal("0.0"):
+                        self.account = self.party.account_receivable_used
+                    else:
+                        self.account = self.party.account_payable_used
         if self.invoice:
             if self.amount and self.statement and self.statement.journal:
                 invoice = self.invoice
@@ -817,7 +794,8 @@ class Line(
     def copy(cls, lines, default=None):
         if default is None:
             default = {}
-        default = default.copy()
+        else:
+            default = default.copy()
         default.setdefault('move', None)
         default.setdefault('invoice', None)
         return super(Line, cls).copy(lines, default=default)

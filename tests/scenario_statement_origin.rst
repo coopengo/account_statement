@@ -6,7 +6,7 @@ Imports::
 
     >>> import datetime
     >>> from decimal import Decimal
-    >>> from proteus import Model, Wizard
+    >>> from proteus import Model, Wizard, Report
     >>> from trytond.tests.tools import activate_modules
     >>> from trytond.modules.company.tests.tools import create_company, \
     ...     get_company
@@ -57,8 +57,6 @@ Create Account Journal::
     >>> sequence.save()
     >>> account_journal = AccountJournal(name="Statement",
     ...     type='statement',
-    ...     credit_account=cash,
-    ...     debit_account=cash,
     ...     sequence=sequence,
     ...     )
     >>> account_journal.save()
@@ -69,6 +67,7 @@ Create a statement with origins::
     >>> Statement = Model.get('account.statement')
     >>> journal_number = StatementJournal(name="Number",
     ...     journal=account_journal,
+    ...     account=cash,
     ...     validation='number_of_lines',
     ...     )
     >>> journal_number.save()
@@ -107,4 +106,9 @@ Statement can not be posted until all origins are finished::
     >>> line.description = "Bank Fees"
     >>> statement.click('post')
     >>> statement.state
-    u'posted'
+    'posted'
+
+Test statement report::
+
+    >>> report = Report('account.statement')
+    >>> _ = report.execute([statement], {})
