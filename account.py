@@ -12,8 +12,7 @@ from trytond.tools import grouped_slice, reduce_ids
 __all__ = ['Move']
 
 
-class Move:
-    __metaclass__ = PoolMeta
+class Move(metaclass=PoolMeta):
     __name__ = 'account.move'
 
     @classmethod
