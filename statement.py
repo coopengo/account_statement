@@ -703,14 +703,15 @@ class Line(
 
     @classmethod
     def __register__(cls, module):
-        super().__register__(module)
-        table_h = cls.__table_handler__(module)
+        super(Line, cls).__register__(module)
+        TableHandler = backend.get('TableHandler')
+        table_h = TableHandler(cls, module)
 
         # JMO: Allow amount of zero
         # see https://support.coopengo.com/issues/8504
         table_h.drop_constraint('check_statement_line_amount')
 
-    @fields.depends('amount', 'party', 'invoice')
+    @fields.depends('amount', 'party', 'invoice', 'date')
     def on_change_party(self):
         if self.party:
             if self.amount:
@@ -727,7 +728,7 @@ class Line(
                 self.invoice = None
 
     @fields.depends('amount', 'party', 'account', 'invoice', 'statement',
-        '_parent_statement.journal')
+        'date', '_parent_statement.journal')
     def on_change_amount(self):
         if self.party:
             with Transaction().set_context(date=self.date):
