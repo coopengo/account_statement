@@ -269,51 +269,50 @@ class Statement(Workflow, ModelSQL, ModelView):
         pool = Pool()
         Currency = pool.get('currency.currency')
         Line = pool.get('account.statement.line')
-        if not self.journal or not self.lines or not self.company:
-            return
-        if self.journal.currency != self.company.currency:
-            return
+        if self.journal and self.lines:
+            invoices = set()
+            for line in self.lines:
+                if getattr(line, 'invoice', None):
+                    invoices.add(line.invoice)
+            invoice_id2amount_to_pay = {}
+            for invoice in invoices:
+                with Transaction().set_context(date=invoice.currency_date):
+                    if invoice.type == 'out':
+                        sign = -1
+                    else:
+                        sign = 1
+                    invoice_id2amount_to_pay[invoice.id] = sign * (
+                        Currency.compute(invoice.currency,
+                            invoice.amount_to_pay, self.journal.currency))
 
-        invoices = set()
-        for line in self.lines:
-            if (getattr(line, 'invoice', None)
-                    and line.invoice.currency == self.company.currency):
-                invoices.add(line.invoice)
-        invoice_id2amount_to_pay = {}
-        for invoice in invoices:
-            if invoice.type == 'out':
-                sign = -1
-            else:
-                sign = 1
-            invoice_id2amount_to_pay[invoice.id] = sign * invoice.amount_to_pay
-
-        lines = list(self.lines)
-        line_offset = 0
-        for index, line in enumerate(self.lines or []):
-            if getattr(line, 'invoice', None) and line.id:
-                if line.invoice.id not in invoice_id2amount_to_pay:
-                    continue
-                if getattr(line, 'amount', None) is None:
-                    continue
-                amount_to_pay = invoice_id2amount_to_pay[line.invoice.id]
-                if ((line.amount > 0) == (amount_to_pay < 0)
-                        or not amount_to_pay):
-                    if abs(line.amount) > abs(amount_to_pay):
-                        new_line = Line()
-                        for field_name, field in Line._fields.iteritems():
-                            if field_name == 'id':
-                                continue
-                            try:
-                                setattr(new_line, field_name,
-                                    getattr(line, field_name))
-                            except AttributeError:
-                                pass
-                        new_line.amount = line.amount + amount_to_pay
-                        new_line.reset_remaining_line(line)
-                        line_offset += 1
-                        lines.insert(index + line_offset, new_line)
-                        invoice_id2amount_to_pay[line.invoice.id] = 0
-                        line.amount = amount_to_pay.copy_sign(line.amount)
+            lines = list(self.lines)
+            line_offset = 0
+            for index, line in enumerate(self.lines or []):
+                if getattr(line, 'invoice', None) and line.id:
+                    amount_to_pay = invoice_id2amount_to_pay[line.invoice.id]
+                    if getattr(line, 'amount', None) is None:
+                        continue
+                    if ((line.amount > 0) == (amount_to_pay < 0)
+                            or not amount_to_pay):
+                        if abs(line.amount) > abs(amount_to_pay):
+                            new_line = Line()
+                            for field_name, field in Line._fields.iteritems():
+                                if field_name == 'id':
+                                    continue
+                                try:
+                                    setattr(new_line, field_name,
+                                        getattr(line, field_name))
+                                except AttributeError:
+                                    pass
+                            new_line.amount = line.amount + amount_to_pay
+                            new_line.reset_remaining_line(line)
+                            line_offset += 1
+                            lines.insert(index + line_offset, new_line)
+                            invoice_id2amount_to_pay[line.invoice.id] = 0
+                            line.amount = amount_to_pay.copy_sign(line.amount)
+                        else:
+                            invoice_id2amount_to_pay[line.invoice.id] = (
+                                line.amount + amount_to_pay)
                     else:
                         line.invoice = None
             self.lines = lines
@@ -682,8 +681,9 @@ class Line(
 
     @classmethod
     def __register__(cls, module):
-        super().__register__(module)
-        table_h = cls.__table_handler__(module)
+        super(Line, cls).__register__(module)
+        TableHandler = backend.get('TableHandler')
+        table_h = TableHandler(cls, module)
 
         # JMO: Allow amount of zero
         # see https://support.coopengo.com/issues/8504
@@ -706,7 +706,7 @@ class Line(
                 self.invoice = None
 
     @fields.depends('amount', 'party', 'account', 'invoice', 'statement',
-        '_parent_statement.journal')
+        'date', '_parent_statement.journal')
     def on_change_amount(self):
         if self.party:
             with Transaction().set_context(date=self.date):
