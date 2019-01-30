@@ -269,49 +269,51 @@ class Statement(Workflow, ModelSQL, ModelView):
         pool = Pool()
         Currency = pool.get('currency.currency')
         Line = pool.get('account.statement.line')
-        if self.journal and self.lines:
-            invoices = set()
-            for line in self.lines:
-                if getattr(line, 'invoice', None):
-                    invoices.add(line.invoice)
-            invoice_id2amount_to_pay = {}
-            for invoice in invoices:
-                with Transaction().set_context(date=invoice.currency_date):
-                    if invoice.type == 'out':
-                        sign = -1
-                    else:
-                        sign = 1
-                    invoice_id2amount_to_pay[invoice.id] = sign * (
-                        Currency.compute(invoice.currency,
-                            invoice.amount_to_pay, self.journal.currency))
+        if not self.journal or not self.lines or not self.company:
+            return
+        if self.journal.currency != self.company.currency:
+            return
 
-            lines = list(self.lines)
-            line_offset = 0
-            for index, line in enumerate(self.lines or []):
-                if getattr(line, 'invoice', None) and line.id:
-                    amount_to_pay = invoice_id2amount_to_pay[line.invoice.id]
-                    if (not self.journal.currency.is_zero(amount_to_pay)
-                            and getattr(line, 'amount', None)
-                            and (line.amount >= 0) == (amount_to_pay <= 0)):
-                        if abs(line.amount) > abs(amount_to_pay):
-                            new_line = Line()
-                            for field_name, field in Line._fields.iteritems():
-                                if field_name == 'id':
-                                    continue
-                                try:
-                                    setattr(new_line, field_name,
-                                        getattr(line, field_name))
-                                except AttributeError:
-                                    pass
-                            new_line.amount = line.amount + amount_to_pay
-                            new_line.reset_remaining_line(line)
-                            line_offset += 1
-                            lines.insert(index + line_offset, new_line)
-                            invoice_id2amount_to_pay[line.invoice.id] = 0
-                            line.amount = amount_to_pay.copy_sign(line.amount)
-                        else:
-                            invoice_id2amount_to_pay[line.invoice.id] = (
-                                line.amount + amount_to_pay)
+        invoices = set()
+        for line in self.lines:
+            if (getattr(line, 'invoice', None)
+                    and line.invoice.currency == self.company.currency):
+                invoices.add(line.invoice)
+        invoice_id2amount_to_pay = {}
+        for invoice in invoices:
+            if invoice.type == 'out':
+                sign = -1
+            else:
+                sign = 1
+            invoice_id2amount_to_pay[invoice.id] = sign * invoice.amount_to_pay
+
+        lines = list(self.lines)
+        line_offset = 0
+        for index, line in enumerate(self.lines or []):
+            if getattr(line, 'invoice', None) and line.id:
+                if line.invoice.id not in invoice_id2amount_to_pay:
+                    continue
+                if getattr(line, 'amount', None) is None:
+                    continue
+                amount_to_pay = invoice_id2amount_to_pay[line.invoice.id]
+                if ((line.amount > 0) == (amount_to_pay < 0)
+                        or not amount_to_pay):
+                    if abs(line.amount) > abs(amount_to_pay):
+                        new_line = Line()
+                        for field_name, field in Line._fields.iteritems():
+                            if field_name == 'id':
+                                continue
+                            try:
+                                setattr(new_line, field_name,
+                                    getattr(line, field_name))
+                            except AttributeError:
+                                pass
+                        new_line.amount = line.amount + amount_to_pay
+                        new_line.reset_remaining_line(line)
+                        line_offset += 1
+                        lines.insert(index + line_offset, new_line)
+                        invoice_id2amount_to_pay[line.invoice.id] = 0
+                        line.amount = amount_to_pay.copy_sign(line.amount)
                     else:
                         line.invoice = None
             self.lines = lines
@@ -471,6 +473,8 @@ class Statement(Workflow, ModelSQL, ModelView):
             amount_second_currency = 0
             for line in lines:
                 move_line = line.get_move_line()
+                if not move_line:
+                    continue
                 move_line.move = move
                 amount += move_line.debit - move_line.credit
                 if move_line.amount_second_currency:
@@ -675,15 +679,15 @@ class Line(
                 'amount_greater_invoice_amount_to_pay': ('Amount "%s" is '
                     'greater than the amount to pay of invoice.'),
                 })
-        t = cls.__table__()
-        cls._sql_constraints += [
-            ('check_statement_line_amount', Check(t, t.amount != 0),
-                'Amount should be a positive or negative value.'),
-            ]
 
-    @staticmethod
-    def default_amount():
-        return Decimal(0)
+    @classmethod
+    def __register__(cls, module):
+        super().__register__(module)
+        table_h = cls.__table_handler__(module)
+
+        # JMO: Allow amount of zero
+        # see https://support.coopengo.com/issues/8504
+        table_h.drop_constraint('check_statement_line_amount')
 
     @fields.depends('amount', 'party', 'invoice')
     def on_change_party(self):
@@ -704,29 +708,19 @@ class Line(
     @fields.depends('amount', 'party', 'account', 'invoice', 'statement',
         '_parent_statement.journal')
     def on_change_amount(self):
-        Currency = Pool().get('currency.currency')
         if self.party:
-            if self.account and self.account not in (
-                    self.party.account_receivable_used,
-                    self.party.account_payable_used):
-                # The user has entered a non-default value, we keep it.
-                pass
-            elif self.amount:
-                if self.amount > Decimal("0.0"):
-                    self.account = self.party.account_receivable_used
-                else:
-                    self.account = self.party.account_payable_used
-        if self.invoice:
-            if self.amount and self.statement and self.statement.journal:
-                invoice = self.invoice
-                journal = self.statement.journal
-                with Transaction().set_context(date=invoice.currency_date):
-                    amount_to_pay = Currency.compute(invoice.currency,
-                        invoice.amount_to_pay, journal.currency)
-                if abs(self.amount) > amount_to_pay:
-                    self.invoice = None
-            else:
-                self.invoice = None
+            with Transaction().set_context(date=self.date):
+                if self.account and self.account not in (
+                        self.party.account_receivable_used,
+                        self.party.account_payable_used):
+                    # The user has entered a non-default value, we keep it.
+                    pass
+                elif self.amount:
+                    if self.amount > Decimal("0.0"):
+                        self.account = self.party.account_receivable_used
+                    else:
+                        self.account = self.party.account_payable_used
+        self.invoice = None
 
     @fields.depends('account', 'invoice')
     def on_change_account(self):
@@ -864,6 +858,8 @@ class Line(
         MoveLine = pool.get('account.move.line')
         Currency = Pool().get('currency.currency')
         zero = Decimal("0.0")
+        if not self.amount:
+            return
         with Transaction().set_context(date=self.date):
             amount = Currency.compute(self.statement.journal.currency,
                 self.amount, self.statement.company.currency)
