@@ -201,15 +201,21 @@ Paid 50 to supplier::
     >>> statement_line = statement.lines[-1]
     >>> statement_line.amount
     Decimal('-10.00')
+    >>> statement_line = statement.lines.pop()
 
 Try to overpay supplier invoice::
 
+    >>> statement_line = StatementLine()
+    >>> statement.lines.append(statement_line)
+    >>> statement_line.date = today
+    >>> statement_line.amount = Decimal('-200')
     >>> statement_line.invoice = supplier_invoice
     >>> statement_line.amount
     Decimal('-0.00')
     >>> statement_line = statement.lines.pop()
     >>> statement_line.amount
-    Decimal('-10.00')
+    Decimal('-200.00')
+
 
     >>> statement.save()
 
