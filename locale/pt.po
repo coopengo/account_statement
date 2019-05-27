@@ -2,124 +2,77 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
-msgctxt "error:account.statement.journal:"
-msgid "Only one journal is allowed per bank account."
-msgstr ""
-
-msgctxt "error:account.statement.line:"
-msgid "Amount should be a positive or negative value."
-msgstr ""
-
-msgctxt "error:account.statement.origin.information:"
-msgid "Invalid domain in schema \"%(schema)s\"."
-msgstr ""
-
-msgctxt "error:account.statement:"
-msgid "End Balance must be \"%s\"."
-msgstr ""
-
-msgctxt "error:account.statement:"
-msgid "Number of Lines must be \"%s\"."
-msgstr ""
-
-msgctxt "error:account.statement:"
-msgid ""
-"Origin line \"%(origin)s\" of statement \"%(statement)s\" still has a "
-"pending amount of \"%(amount)s\"."
-msgstr ""
-
-msgctxt "error:account.statement:"
-msgid "Statement \"%s\" must be cancelled before deletion."
-msgstr ""
-
-msgctxt "error:account.statement:"
-msgid "There are paid invoices on draft statements."
-msgstr ""
-
-msgctxt "error:account.statement:"
-msgid "Total Amount must be \"%s\"."
-msgstr ""
-
 msgctxt "field:account.statement,balance:"
 msgid "Balance"
-msgstr ""
+msgstr "Saldo"
 
-#, fuzzy
 msgctxt "field:account.statement,company:"
 msgid "Company"
-msgstr "Társaság"
+msgstr "Empresa"
 
-#, fuzzy
 msgctxt "field:account.statement,create_date:"
 msgid "Create Date"
-msgstr "Létrehozás détuma"
+msgstr "Data de criação"
 
-#, fuzzy
 msgctxt "field:account.statement,create_uid:"
 msgid "Create User"
-msgstr "Által létrehozva "
+msgstr "Criado pelo usuário"
 
 msgctxt "field:account.statement,currency_digits:"
 msgid "Currency Digits"
-msgstr ""
+msgstr "Dígitos da moeda"
 
-#, fuzzy
 msgctxt "field:account.statement,date:"
 msgid "Date"
-msgstr "Dátum"
+msgstr "Data"
 
 msgctxt "field:account.statement,end_balance:"
 msgid "End Balance"
-msgstr ""
+msgstr "Saldo Final"
 
-#, fuzzy
 msgctxt "field:account.statement,id:"
 msgid "ID"
 msgstr "ID"
 
 msgctxt "field:account.statement,journal:"
 msgid "Journal"
-msgstr ""
+msgstr "Diário"
 
-#, fuzzy
 msgctxt "field:account.statement,lines:"
 msgid "Lines"
-msgstr "Sor"
+msgstr "Linhas"
 
-#, fuzzy
 msgctxt "field:account.statement,name:"
 msgid "Name"
-msgstr "Név"
+msgstr "Nome"
 
 msgctxt "field:account.statement,number_of_lines:"
 msgid "Number of Lines"
-msgstr ""
+msgstr "Número de linhas"
 
 msgctxt "field:account.statement,origin_file:"
 msgid "Origin File"
-msgstr ""
+msgstr "Arquido de origem"
 
 msgctxt "field:account.statement,origin_file_id:"
 msgid "Origin File ID"
-msgstr ""
+msgstr "ID do Arquivo de Origem"
 
-#, fuzzy
 msgctxt "field:account.statement,origins:"
 msgid "Origins"
-msgstr "Origins"
+msgstr "Origens"
 
 msgctxt "field:account.statement,rec_name:"
 msgid "Record Name"
-msgstr ""
+msgstr "Nome do Registro"
 
 msgctxt "field:account.statement,start_balance:"
 msgid "Start Balance"
-msgstr ""
+msgstr "Saldo Inicial"
 
-#, fuzzy
 msgctxt "field:account.statement,state:"
 msgid "State"
-msgstr "Állapot"
+msgstr "Estado"
 
 #, fuzzy
 msgctxt "field:account.statement,to_reconcile:"
@@ -128,36 +81,32 @@ msgstr "Reconcile"
 
 msgctxt "field:account.statement,total_amount:"
 msgid "Total Amount"
-msgstr ""
+msgstr "Montante Total"
 
 msgctxt "field:account.statement,validation:"
 msgid "Validation"
-msgstr ""
+msgstr "Validação"
 
-#, fuzzy
 msgctxt "field:account.statement,write_date:"
 msgid "Write Date"
-msgstr "utolsó módosítás dátuma"
+msgstr "Data de gravação"
 
-#, fuzzy
 msgctxt "field:account.statement,write_uid:"
 msgid "Write User"
-msgstr "Által módosítva"
+msgstr "Gravado pelo usuário"
 
-#, fuzzy
 msgctxt "field:account.statement.import.start,company:"
 msgid "Company"
-msgstr "Társaság"
+msgstr "Empresa"
 
 msgctxt "field:account.statement.import.start,file_:"
 msgid "File"
-msgstr ""
+msgstr "Arquivo"
 
 msgctxt "field:account.statement.import.start,file_format:"
 msgid "File Format"
-msgstr ""
+msgstr "Formato do arquivo"
 
-#, fuzzy
 msgctxt "field:account.statement.import.start,id:"
 msgid "ID"
 msgstr "ID"
@@ -165,426 +114,376 @@ msgstr "ID"
 #, fuzzy
 msgctxt "field:account.statement.journal,account:"
 msgid "Account"
-msgstr "Számla"
+msgstr "Contas"
 
 msgctxt "field:account.statement.journal,bank_account:"
 msgid "Bank Account"
-msgstr ""
+msgstr "Conta Bancária"
 
-#, fuzzy
 msgctxt "field:account.statement.journal,company:"
 msgid "Company"
-msgstr "Társaság"
+msgstr "Empresa"
 
 msgctxt "field:account.statement.journal,company_party:"
 msgid "Company Party"
-msgstr ""
+msgstr "Pessoa da Empresa"
 
-#, fuzzy
 msgctxt "field:account.statement.journal,create_date:"
 msgid "Create Date"
-msgstr "Létrehozás détuma"
+msgstr "Data de criação"
 
-#, fuzzy
 msgctxt "field:account.statement.journal,create_uid:"
 msgid "Create User"
-msgstr "Által létrehozva "
+msgstr "Criado pelo usuário"
 
-#, fuzzy
 msgctxt "field:account.statement.journal,currency:"
 msgid "Currency"
-msgstr "Pénznem"
+msgstr "Moeda"
 
-#, fuzzy
 msgctxt "field:account.statement.journal,id:"
 msgid "ID"
 msgstr "ID"
 
 msgctxt "field:account.statement.journal,journal:"
 msgid "Journal"
-msgstr ""
+msgstr "Diário"
 
-#, fuzzy
 msgctxt "field:account.statement.journal,name:"
 msgid "Name"
-msgstr "Név"
+msgstr "Nome"
 
 msgctxt "field:account.statement.journal,rec_name:"
 msgid "Record Name"
-msgstr ""
+msgstr "Nome do Registro"
 
 msgctxt "field:account.statement.journal,validation:"
 msgid "Validation Type"
-msgstr ""
+msgstr "Tipo de Validação"
 
-#, fuzzy
 msgctxt "field:account.statement.journal,write_date:"
 msgid "Write Date"
-msgstr "utolsó módosítás dátuma"
+msgstr "Data de gravação"
 
-#, fuzzy
 msgctxt "field:account.statement.journal,write_uid:"
 msgid "Write User"
-msgstr "Által módosítva"
+msgstr "Gravado pelo usuário"
 
-#, fuzzy
 msgctxt "field:account.statement.line,account:"
 msgid "Account"
-msgstr "Számla"
+msgstr "Contas"
 
 msgctxt "field:account.statement.line,amount:"
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
-#, fuzzy
 msgctxt "field:account.statement.line,company:"
 msgid "Company"
-msgstr "Társaság"
+msgstr "Empresa"
 
-#, fuzzy
 msgctxt "field:account.statement.line,create_date:"
 msgid "Create Date"
-msgstr "Létrehozás détuma"
+msgstr "Data de criação"
 
-#, fuzzy
 msgctxt "field:account.statement.line,create_uid:"
 msgid "Create User"
-msgstr "Által létrehozva "
+msgstr "Criado pelo usuário"
 
-#, fuzzy
 msgctxt "field:account.statement.line,date:"
 msgid "Date"
-msgstr "Dátum"
+msgstr "Data"
 
-#, fuzzy
 msgctxt "field:account.statement.line,description:"
 msgid "Description"
-msgstr "Leírás"
+msgstr "Descrição"
 
-#, fuzzy
 msgctxt "field:account.statement.line,id:"
 msgid "ID"
 msgstr "ID"
 
 msgctxt "field:account.statement.line,invoice:"
 msgid "Invoice"
-msgstr ""
+msgstr "Fatura"
 
 msgctxt "field:account.statement.line,move:"
 msgid "Account Move"
-msgstr ""
+msgstr "Lançamento Contábil"
 
-#, fuzzy
 msgctxt "field:account.statement.line,number:"
 msgid "Number"
-msgstr "Szám"
+msgstr "Número"
 
-#, fuzzy
 msgctxt "field:account.statement.line,origin:"
 msgid "Origin"
-msgstr "Origins"
+msgstr "Origem"
 
-#, fuzzy
 msgctxt "field:account.statement.line,party:"
 msgid "Party"
-msgstr "Partner"
+msgstr "Parceiro"
 
 msgctxt "field:account.statement.line,rec_name:"
 msgid "Record Name"
-msgstr ""
+msgstr "Nome do Registro"
 
-#, fuzzy
 msgctxt "field:account.statement.line,sequence:"
 msgid "Sequence"
-msgstr "Számkör"
+msgstr "Sequência"
 
-#, fuzzy
 msgctxt "field:account.statement.line,statement:"
 msgid "Statement"
-msgstr "Statement"
+msgstr "Extrato"
 
 msgctxt "field:account.statement.line,statement_state:"
 msgid "Statement State"
-msgstr ""
+msgstr "Estado do Extrato"
 
-#, fuzzy
 msgctxt "field:account.statement.line,write_date:"
 msgid "Write Date"
-msgstr "utolsó módosítás dátuma"
+msgstr "Data de gravação"
 
-#, fuzzy
 msgctxt "field:account.statement.line,write_uid:"
 msgid "Write User"
-msgstr "Által módosítva"
+msgstr "Gravado pelo usuário"
 
 msgctxt "field:account.statement.line.group,amount:"
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,create_date:"
 msgid "Create Date"
-msgstr "Létrehozás détuma"
+msgstr "Data de criação"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,create_uid:"
 msgid "Create User"
-msgstr "Által létrehozva "
+msgstr "Criado pelo usuário"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,currency:"
 msgid "Currency"
-msgstr "Pénznem"
+msgstr "Moeda"
 
 msgctxt "field:account.statement.line.group,currency_digits:"
 msgid "Currency Digits"
-msgstr ""
+msgstr "Dígitos da moeda"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,date:"
 msgid "Date"
-msgstr "Dátum"
+msgstr "Data"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,id:"
 msgid "ID"
 msgstr "ID"
 
 msgctxt "field:account.statement.line.group,journal:"
 msgid "Journal"
-msgstr ""
+msgstr "Diário"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,move:"
 msgid "Move"
-msgstr "Lépések"
+msgstr "Lançamento"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,number:"
 msgid "Number"
-msgstr "Szám"
+msgstr "Número"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,party:"
 msgid "Party"
-msgstr "Partner"
+msgstr "Parceiro"
 
 msgctxt "field:account.statement.line.group,rec_name:"
 msgid "Record Name"
-msgstr ""
+msgstr "Nome do Registro"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,statement:"
 msgid "Statement"
-msgstr "Statement"
+msgstr "Extrato"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,write_date:"
 msgid "Write Date"
-msgstr "utolsó módosítás dátuma"
+msgstr "Data de gravação"
 
-#, fuzzy
 msgctxt "field:account.statement.line.group,write_uid:"
 msgid "Write User"
-msgstr "Által módosítva"
+msgstr "Gravado pelo usuário"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,account:"
 msgid "Account"
-msgstr "Számla"
+msgstr "Conta"
 
 msgctxt "field:account.statement.origin,amount:"
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,company:"
 msgid "Company"
-msgstr "Társaság"
+msgstr "Empresa"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,create_date:"
 msgid "Create Date"
-msgstr "Létrehozás détuma"
+msgstr "Data de criação"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,create_uid:"
 msgid "Create User"
-msgstr "Által létrehozva "
+msgstr "Criado pelo usuário"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,date:"
 msgid "Date"
-msgstr "Dátum"
+msgstr "Data"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,description:"
 msgid "Description"
-msgstr "Leírás"
+msgstr "Descrição"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,id:"
 msgid "ID"
 msgstr "ID"
 
-msgctxt "field:account.statement.origin,informations:"
-msgid "Informations"
-msgstr ""
-
 #, fuzzy
+msgctxt "field:account.statement.origin,information:"
+msgid "Information"
+msgstr "Informações"
+
 msgctxt "field:account.statement.origin,lines:"
 msgid "Lines"
-msgstr "Sor"
+msgstr "Linhas"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,number:"
 msgid "Number"
-msgstr "Szám"
+msgstr "Número"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,party:"
 msgid "Party"
-msgstr "Partner"
+msgstr "Pessoa"
 
 msgctxt "field:account.statement.origin,pending_amount:"
 msgid "Pending Amount"
-msgstr ""
+msgstr "Montante Pendente"
 
 msgctxt "field:account.statement.origin,rec_name:"
 msgid "Record Name"
-msgstr ""
+msgstr "Nome do Registro"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,statement:"
 msgid "Statement"
-msgstr "Statement"
+msgstr "Extrato"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,statement_id:"
 msgid "Statement ID"
-msgstr "Statement"
+msgstr "ID do Extrato"
 
 msgctxt "field:account.statement.origin,statement_state:"
 msgid "Statement State"
-msgstr ""
+msgstr "Estado do Extrato"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,write_date:"
 msgid "Write Date"
-msgstr "utolsó módosítás dátuma"
+msgstr "Data de gravação"
 
-#, fuzzy
 msgctxt "field:account.statement.origin,write_uid:"
 msgid "Write User"
-msgstr "Által módosítva"
+msgstr "Gravado pelo usuário"
 
-#, fuzzy
 msgctxt "field:account.statement.origin.information,create_date:"
 msgid "Create Date"
-msgstr "Létrehozás détuma"
+msgstr "Data de criação"
 
-#, fuzzy
 msgctxt "field:account.statement.origin.information,create_uid:"
 msgid "Create User"
-msgstr "Által létrehozva "
+msgstr "Criado pelo usuário"
 
 msgctxt "field:account.statement.origin.information,digits:"
 msgid "Digits"
-msgstr ""
+msgstr "Dígitos"
 
 msgctxt "field:account.statement.origin.information,domain:"
 msgid "Domain"
 msgstr ""
 
-#, fuzzy
 msgctxt "field:account.statement.origin.information,id:"
 msgid "ID"
 msgstr "ID"
 
-#, fuzzy
 msgctxt "field:account.statement.origin.information,name:"
 msgid "Name"
-msgstr "Név"
+msgstr "Nome"
 
 msgctxt "field:account.statement.origin.information,rec_name:"
 msgid "Record Name"
-msgstr ""
+msgstr "Nome do Registro"
 
 msgctxt "field:account.statement.origin.information,selection:"
 msgid "Selection"
-msgstr ""
+msgstr "Seleção"
 
 msgctxt "field:account.statement.origin.information,selection_json:"
 msgid "Selection JSON"
-msgstr ""
+msgstr "Seleção JSON"
 
 msgctxt "field:account.statement.origin.information,selection_sorted:"
 msgid "Selection Sorted"
-msgstr ""
+msgstr "Seleção Ordenada"
 
 msgctxt "field:account.statement.origin.information,string:"
 msgid "String"
-msgstr ""
+msgstr "Texto"
 
 msgctxt "field:account.statement.origin.information,type_:"
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
-#, fuzzy
 msgctxt "field:account.statement.origin.information,write_date:"
 msgid "Write Date"
-msgstr "utolsó módosítás dátuma"
+msgstr "Data de gravação"
 
-#, fuzzy
 msgctxt "field:account.statement.origin.information,write_uid:"
 msgid "Write User"
-msgstr "Által módosítva"
+msgstr "Gravado pelo usuário"
 
 msgctxt "help:account.statement.origin.information,selection:"
 msgid "A couple of key and label separated by \":\" per line"
-msgstr ""
+msgstr "Um par de chave e nome separados por \":\" por linha"
 
 msgctxt "help:account.statement.origin.information,selection_sorted:"
 msgid "If the selection must be sorted on label"
-msgstr ""
+msgstr "Se a seleção de ser ordenada por nome"
 
 msgctxt "model:account.statement,name:"
 msgid "Account Statement"
-msgstr ""
+msgstr "Extrato Bancário"
 
 msgctxt "model:account.statement.import.start,name:"
 msgid "Statement Import Start"
-msgstr ""
+msgstr "Iniciar Importação do Extrato"
 
-#, fuzzy
 msgctxt "model:account.statement.journal,name:"
 msgid "Statement Journal"
-msgstr "Statement Journals"
+msgstr "Diário de Extratos"
 
 msgctxt "model:account.statement.line,name:"
 msgid "Account Statement Line"
-msgstr ""
+msgstr "Linha de Extrato Bancário"
 
 msgctxt "model:account.statement.line.group,name:"
 msgid "Account Statement Line Group"
-msgstr ""
+msgstr "Grupo de Linhas do Extrato"
 
 msgctxt "model:account.statement.origin,name:"
 msgid "Account Statement Origin"
-msgstr ""
+msgstr "Origem do Extrato Bancário"
 
 msgctxt "model:account.statement.origin.information,name:"
 msgid "Statement Origin Information"
-msgstr ""
+msgstr "Informação da Origem do Extrato"
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_line_group_form"
 msgid "Statement Line Groups"
 msgstr "Statement Line Groups"
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_line_groups_form"
 msgid "Line Groups"
 msgstr "Line Groups"
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_move_lines_form"
 msgid "Move Lines"
 msgstr "Move Lines"
@@ -592,36 +491,43 @@ msgstr "Move Lines"
 #, fuzzy
 msgctxt "model:ir.action,name:act_moves_form"
 msgid "Moves"
-msgstr "Raktár mozgás"
+msgstr "Moves"
 
 msgctxt "model:ir.action,name:act_reconcile"
 msgid "Reconcile Statements"
 msgstr "Reconcile Statements"
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_statement_form"
 msgid "Statements"
 msgstr "Statements"
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_statement_journal_form"
 msgid "Statement Journals"
 msgstr "Statement Journals"
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_statement_line_move"
 msgid "Statement Lines"
 msgstr "Statement Lines"
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_statement_line_move_line"
 msgid "Statement Lines"
 msgstr "Statement Lines"
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_statement_origin_form_statement"
 msgid "Origins"
 msgstr "Origins"
 
+#, fuzzy
 msgctxt "model:ir.action,name:report_statement"
 msgid "Statement"
 msgstr "Statement"
 
+#, fuzzy
 msgctxt "model:ir.action,name:wizard_statement_import"
 msgid "Import Statement"
 msgstr "Import Statement"
@@ -629,13 +535,15 @@ msgstr "Import Statement"
 #, fuzzy
 msgctxt "model:ir.action.act_window.domain,name:act_statement_form_domain_all"
 msgid "All"
-msgstr "Összes"
+msgstr "All"
 
+#, fuzzy
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_draft"
 msgid "Draft"
 msgstr "Draft"
 
+#, fuzzy
 msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_posted"
 msgid "Posted"
@@ -646,6 +554,66 @@ msgctxt ""
 "model:ir.action.act_window.domain,name:act_statement_form_domain_validated"
 msgid "Validated"
 msgstr "Validated"
+
+msgctxt "model:ir.message,text:msg_import_no_journal"
+msgid ""
+"To import statement, you must create a journal for account \"%(account)s\"."
+msgstr ""
+
+msgctxt "model:ir.message,text:msg_import_wrong_currency"
+msgid ""
+"To import statement, the journal \"%(journal)s\" must have the currency "
+"\"%(currency)s\" instead of \"%(journal_currency)s\"."
+msgstr ""
+
+#, fuzzy
+msgctxt "model:ir.message,text:msg_journal_bank_account_unique"
+msgid "Only one journal is allowed per bank account."
+msgstr "Apenas um diário é permitido por conta bancária."
+
+msgctxt "model:ir.message,text:msg_line_amount_non_zero"
+msgid "Statement line amount cannot be zero."
+msgstr ""
+
+msgctxt "model:ir.message,text:msg_statement_delete_cancel"
+msgid "To delete statement \"%(statement)s\" you must cancel it."
+msgstr ""
+
+msgctxt "model:ir.message,text:msg_statement_paid_invoice_draft"
+msgid ""
+"The validation of the statements will remove paid invoices from other "
+"statements."
+msgstr ""
+
+msgctxt "model:ir.message,text:msg_statement_post_pending_amount"
+msgid ""
+"To post statement \"%(statement)s\" you must create lines for pending "
+"%(amount)s of origin \"%(origin)s\"."
+msgstr ""
+
+msgctxt "model:ir.message,text:msg_statement_wrong_end_balance"
+msgid ""
+"To validate statement \"%(statement)s\" you must change lines to have end "
+"balance of %(end_balance)s instead of %(amount)s."
+msgstr ""
+
+msgctxt "model:ir.message,text:msg_statement_wrong_number_of_lines_add"
+msgid "To validate statement \"%(statement)s\" you must add %(n)s line(s)."
+msgstr ""
+
+msgctxt "model:ir.message,text:msg_statement_wrong_number_of_lines_remove"
+msgid "To validate statement \"%(statement)s\" you must remove %(n)s line(s)."
+msgstr ""
+
+msgctxt "model:ir.message,text:msg_statement_wrong_total_amount"
+msgid ""
+"To validate statement \"%(statement)s\" you must change lines to have total "
+"amount of %(total_amount)s instead of %(amount)s."
+msgstr ""
+
+msgctxt "model:ir.model.button,confirm:statement_post_button"
+msgid "Are you sure you want to post the statement?"
+msgstr ""
 
 msgctxt "model:ir.model.button,string:statement_cancel_button"
 msgid "Cancel"
@@ -667,192 +635,210 @@ msgctxt "model:ir.model.button,string:statement_validate_button"
 msgid "Validate"
 msgstr "Validate"
 
+msgctxt "model:ir.rule.group,name:rule_group_line_group"
+msgid "User in statement's company"
+msgstr ""
+
+msgctxt "model:ir.rule.group,name:rule_group_statement"
+msgid "User in company"
+msgstr ""
+
+msgctxt "model:ir.rule.group,name:rule_group_statement_journal"
+msgid "User in company"
+msgstr ""
+
+msgctxt "model:ir.rule.group,name:rule_group_statement_line"
+msgid "User in company"
+msgstr ""
+
+msgctxt "model:ir.rule.group,name:rule_group_statement_origin"
+msgid "User in statement's company"
+msgstr ""
+
+#, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_line_group_form"
 msgid "Statement Line Groups"
 msgstr "Statement Line Groups"
 
+#, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_statement_configuration"
 msgid "Statements"
 msgstr "Statements"
 
+#, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_statement_form"
 msgid "Statements"
 msgstr "Statements"
 
+#, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_statement_import"
 msgid "Import Statement"
 msgstr "Import Statement"
 
+#, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_statement_journal_form"
 msgid "Statement Journals"
 msgstr "Statement Journals"
 
+#, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_statements"
 msgid "Statements"
 msgstr "Statements"
 
+#, fuzzy
 msgctxt "model:res.group,name:group_statement"
 msgid "Statement"
 msgstr "Statement"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "#"
 msgstr "#"
 
 msgctxt "report:account.statement:"
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Canceled"
-msgstr "Mégse"
+msgstr "Cancelado"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Date"
-msgstr "Dátum"
+msgstr "Data"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Date:"
-msgstr "Dátum:"
+msgstr "Data:"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Description"
-msgstr "Leírás"
+msgstr "Descrição"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Draft"
-msgstr "Draft"
+msgstr "Rascunho"
 
 msgctxt "report:account.statement:"
 msgid "Journal:"
-msgstr ""
+msgstr "Diário:"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Number"
-msgstr "Szám"
+msgstr "Número"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Party"
-msgstr "Partner"
+msgstr "Parceiro"
 
-#, fuzzy
 msgctxt "report:account.statement:"
 msgid "Statement"
-msgstr "Statement"
+msgstr "Extrato"
 
 msgctxt "report:account.statement:"
 msgid "Total"
-msgstr ""
+msgstr "Total"
 
 #, fuzzy
 msgctxt "selection:account.journal,type:"
 msgid "Statement"
-msgstr "Statement"
+msgstr "Extrato"
 
-#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Canceled"
-msgstr "Mégse"
+msgstr "Cancelado"
 
-#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Draft"
-msgstr "Draft"
+msgstr "Rascunho"
 
-#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Posted"
-msgstr "Posted"
+msgstr "Confirmado"
 
-#, fuzzy
 msgctxt "selection:account.statement,state:"
 msgid "Validated"
-msgstr "Validate"
-
-msgctxt "selection:account.statement.import.start,file_format:"
-msgid ""
-msgstr ""
+msgstr "Validado"
 
 msgctxt "selection:account.statement.journal,validation:"
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
 msgctxt "selection:account.statement.journal,validation:"
 msgid "Balance"
-msgstr ""
+msgstr "Saldo"
 
 msgctxt "selection:account.statement.journal,validation:"
 msgid "Number of Lines"
-msgstr ""
+msgstr "Número de linhas"
 
 msgctxt "selection:account.statement.origin.information,type_:"
 msgid "Boolean"
-msgstr ""
+msgstr "Booleano"
 
 msgctxt "selection:account.statement.origin.information,type_:"
 msgid "Char"
-msgstr ""
+msgstr "Caractere"
 
-#, fuzzy
 msgctxt "selection:account.statement.origin.information,type_:"
 msgid "Date"
-msgstr "Dátum"
+msgstr "Data"
 
 msgctxt "selection:account.statement.origin.information,type_:"
 msgid "DateTime"
-msgstr ""
+msgstr "DataHora"
 
 msgctxt "selection:account.statement.origin.information,type_:"
 msgid "Float"
-msgstr ""
+msgstr "Número real"
 
 msgctxt "selection:account.statement.origin.information,type_:"
 msgid "Integer"
-msgstr ""
+msgstr "Inteiro"
 
 msgctxt "selection:account.statement.origin.information,type_:"
 msgid "Numeric"
-msgstr ""
+msgstr "Numérico"
 
 msgctxt "selection:account.statement.origin.information,type_:"
 msgid "Selection"
-msgstr ""
+msgstr "Seleção"
 
 msgctxt "view:account.statement.line:"
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
 msgctxt "view:account.statement.origin:"
 msgid "Amount"
-msgstr ""
+msgstr "Quantidade"
 
 msgctxt "view:account.statement:"
 msgid "Other Info"
-msgstr ""
+msgstr "Outras informações"
 
-#, fuzzy
 msgctxt "view:account.statement:"
 msgid "Statement Lines"
-msgstr "Statement Lines"
+msgstr "Linhas do Extrato"
 
-#, fuzzy
 msgctxt "wizard_button:account.statement.import,start,end:"
 msgid "Cancel"
-msgstr "Mégse"
+msgstr "Cancelar"
 
 msgctxt "wizard_button:account.statement.import,start,import_:"
 msgid "Import"
-msgstr ""
+msgstr "Importar"
 
-#, fuzzy
 msgctxt "view:account.statement:"
 msgid "Cancel"
-msgstr "Mégse"
+msgstr "Cancelar"
+
+msgctxt "view:account.statement:"
+msgid "Draft"
+msgstr "Rascunho"
+
+msgctxt "view:account.statement:"
+msgid "Post"
+msgstr "Confirmar"
+
+msgctxt "view:account.statement:"
+msgid "Validate"
+msgstr "Validar"

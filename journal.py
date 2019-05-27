@@ -37,7 +37,8 @@ class Journal(ModelSQL, ModelView):
         depends=['company_party', 'currency'])
     account = fields.Many2One('account.account', "Account", required=True,
         domain=[
-            ('kind', '!=', 'view'),
+            ('type', '!=', None),
+            ('closed', '!=', True),
             ('company', '=', Eval('company')),
             ],
         depends=['company'])
@@ -45,11 +46,12 @@ class Journal(ModelSQL, ModelView):
     @classmethod
     def __setup__(cls):
         super(Journal, cls).__setup__()
+        cls._order.insert(0, ('name', 'ASC'))
         t = cls.__table__()
         cls._sql_constraints = [
             ('bank_account_unique',
                 Unique(t, t.bank_account, t.company),
-                "Only one journal is allowed per bank account."),
+                'account_statement.msg_journal_bank_account_unique'),
             ]
 
     @classmethod

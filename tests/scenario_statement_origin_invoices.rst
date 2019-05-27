@@ -1,6 +1,6 @@
-=================================
-Account Statement Origin Scenario
-=================================
+==========================================
+Account Statement Origin Invoices Scenario
+==========================================
 
 Imports::
 
@@ -36,7 +36,7 @@ Create chart of accounts::
     >>> _ = create_chart(company)
     >>> accounts = get_accounts(company)
     >>> receivable = accounts['receivable']
-    >>> expense = accounts['expense']
+    >>> revenue = accounts['revenue']
     >>> cash = accounts['cash']
 
 Create parties::
@@ -44,6 +44,31 @@ Create parties::
     >>> Party = Model.get('party.party')
     >>> customer = Party(name="Customer")
     >>> customer.save()
+
+Create 2 customer invoices::
+
+    >>> Invoice = Model.get('account.invoice')
+    >>> customer_invoice1 = Invoice(type='out')
+    >>> customer_invoice1.party = customer
+    >>> invoice_line = customer_invoice1.lines.new()
+    >>> invoice_line.quantity = 1
+    >>> invoice_line.unit_price = Decimal('100')
+    >>> invoice_line.account = revenue
+    >>> invoice_line.description = 'Test'
+    >>> customer_invoice1.click('post')
+    >>> customer_invoice1.state
+    'posted'
+
+    >>> customer_invoice2 = Invoice(type='out')
+    >>> customer_invoice2.party = customer
+    >>> invoice_line = customer_invoice2.lines.new()
+    >>> invoice_line.quantity = 1
+    >>> invoice_line.unit_price = Decimal('150')
+    >>> invoice_line.account = revenue
+    >>> invoice_line.description = 'Test'
+    >>> customer_invoice2.click('post')
+    >>> customer_invoice2.state
+    'posted'
 
 Create Account Journal::
 
@@ -77,38 +102,27 @@ Create a statement with origins::
     >>> statement.number_of_lines = 1
     >>> origin = statement.origins.new()
     >>> origin.date = today
-    >>> origin.amount = Decimal('50.00')
-    >>> origin.party = customer
+    >>> origin.amount = Decimal('180.00')
     >>> statement.click('validate_statement')
 
-Statement can not be posted until all origins are finished::
+Pending amount is used to fill all invoices::
 
-    >>> statement.click('post')  # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    StatementPostError: ...
-    >>> statement.click('draft')
     >>> origin, = statement.origins
     >>> line = origin.lines.new()
-    >>> line.date == today
-    True
+    >>> line.invoice = customer_invoice1
     >>> line.amount
-    Decimal('50.00')
+    Decimal('100.00')
     >>> line.party == customer
     True
     >>> line.account == receivable
     True
-    >>> line.amount = Decimal('52.00')
+    >>> origin.pending_amount
+    Decimal('80.00')
     >>> line = origin.lines.new()
+    >>> line.invoice = customer_invoice2
     >>> line.amount
-    Decimal('-2.00')
-    >>> line.account = expense
-    >>> line.description = "Bank Fees"
-    >>> statement.click('post')
-    >>> statement.state
-    'posted'
-
-Test statement report::
-
-    >>> report = Report('account.statement')
-    >>> _ = report.execute([statement], {})
+    Decimal('80.00')
+    >>> line.party == customer
+    True
+    >>> line.account == receivable
+    True

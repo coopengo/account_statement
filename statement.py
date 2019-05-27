@@ -9,13 +9,18 @@ from sql.conditionals import Coalesce
 from sql.aggregate import Max, Sum
 
 from trytond.config import config
+from trytond.i18n import gettext
 from trytond.model import Workflow, ModelView, ModelSQL, fields, Check, \
     sequence_ordered, DictSchemaMixin
+from trytond.model.exceptions import AccessError
 from trytond.pyson import Eval, If, Bool
 from trytond.transaction import Transaction
 from trytond.pool import Pool
 from trytond.wizard import Wizard, StateView, StateAction, Button
 from trytond.modules.company import CompanyReport
+
+from .exceptions import (
+    StatementValidateError, StatementValidateWarning, StatementPostError)
 
 __all__ = ['Statement', 'Line', 'LineGroup',
     'Origin', 'OriginInformation',
@@ -139,18 +144,6 @@ class Statement(Workflow, ModelSQL, ModelView):
     def __setup__(cls):
         super(Statement, cls).__setup__()
         cls._order[0] = ('id', 'DESC')
-        cls._error_messages.update({
-                'wrong_end_balance': 'End Balance must be "%s".',
-                'wrong_total_amount': 'Total Amount must be "%s".',
-                'wrong_number_of_lines': 'Number of Lines must be "%s".',
-                'delete_cancel': ('Statement "%s" must be cancelled before '
-                    'deletion.'),
-                'paid_invoice_draft_statement': ('There are paid invoices on '
-                    'draft statements.'),
-                'post_with_pending_amount': ('Origin line "%(origin)s" '
-                    'of statement "%(statement)s" still has a pending amount '
-                    'of "%(amount)s".'),
-                })
         cls._transitions |= set((
                 ('draft', 'validated'),
                 ('draft', 'cancel'),
@@ -254,6 +247,51 @@ class Statement(Workflow, ModelSQL, ModelView):
     def on_change_with_balance(self, name=None):
         return ((getattr(self, 'end_balance', 0) or 0)
             - (getattr(self, 'start_balance', 0) or 0))
+
+    @fields.depends('origins', 'lines', 'journal', 'company')
+    def on_change_origins(self):
+        if not self.journal or not self.origins or not self.company:
+            return
+        if self.journal.currency != self.company.currency:
+            return
+
+        invoices = set()
+        for line in self.lines:
+            if (getattr(line, 'invoice', None)
+                    and line.invoice.currency == self.company.currency):
+                invoices.add(line.invoice)
+        for origin in self.origins:
+            for line in origin.lines:
+                if (getattr(line, 'invoice', None)
+                        and line.invoice.currency == self.company.currency):
+                    invoices.add(line.invoice)
+        invoice_id2amount_to_pay = {}
+        for invoice in invoices:
+            if invoice.type == 'out':
+                sign = -1
+            else:
+                sign = 1
+            invoice_id2amount_to_pay[invoice.id] = sign * invoice.amount_to_pay
+
+        origins = list(self.origins)
+        for origin in origins:
+            lines = list(origin.lines)
+            for line in lines:
+                if (getattr(line, 'invoice', None) and line.id
+                        and line.invoice.id in invoice_id2amount_to_pay):
+                    amount_to_pay = invoice_id2amount_to_pay[line.invoice.id]
+                    if (amount_to_pay
+                            and getattr(line, 'amount', None)
+                            and (line.amount >= 0) == (amount_to_pay <= 0)):
+                        if abs(line.amount) > abs(amount_to_pay):
+                            line.amount = amount_to_pay.copy_sign(line.amount)
+                        else:
+                            invoice_id2amount_to_pay[line.invoice.id] = (
+                                line.amount + amount_to_pay)
+                    else:
+                        line.invoice = None
+            origin.lines = lines
+        self.origins = origins
 
     @fields.depends('lines', 'journal', 'company')
     def on_change_lines(self):
@@ -379,7 +417,9 @@ class Statement(Workflow, ModelSQL, ModelView):
         cls.cancel(statements)
         for statement in statements:
             if statement.state != 'cancel':
-                cls.raise_user_error('delete_cancel', (statement.rec_name,))
+                raise AccessError(
+                    gettext('account_statement.msg_statement_delete_cancel',
+                        statement=statement.rec_name))
         super(Statement, cls).delete(statements)
 
     @classmethod
@@ -392,12 +432,18 @@ class Statement(Workflow, ModelSQL, ModelView):
         pool = Pool()
         Lang = pool.get('ir.lang')
 
-        end_balance = (self.start_balance
+        amount = (self.start_balance
             + sum(l.amount for l in self.lines))
-        if end_balance != self.end_balance:
+        if amount != self.end_balance:
             lang = Lang.get()
-            amount = lang.currency(end_balance, self.journal.currency)
-            self.raise_user_error('wrong_end_balance', amount)
+            end_balance = lang.currency(
+                self.end_balance, self.journal.currency)
+            amount = lang.currency(amount, self.journal.currency)
+            raise StatementValidateError(
+                gettext('account_statement.msg_statement_wrong_end_balance',
+                    statement=self.rec_name,
+                    end_balance=end_balance,
+                    amount=amount))
 
     def validate_amount(self):
         pool = Pool()
@@ -406,13 +452,29 @@ class Statement(Workflow, ModelSQL, ModelView):
         amount = sum(l.amount for l in self.lines)
         if amount != self.total_amount:
             lang = Lang.get()
+            total_amount = lang.currency(
+                self.total_amount, self.journal.currency)
             amount = lang.currency(amount, self.journal.currency)
-            self.raise_user_error('wrong_total_amount', amount)
+            raise StatementValidateError(
+                gettext('account_statement.msg_statement_wrong_total_amount',
+                    statement=self.rec_name,
+                    total_amount=total_amount,
+                    amount=amount))
 
     def validate_number_of_lines(self):
         number = len(list(self.grouped_lines))
-        if number != self.number_of_lines:
-            self.raise_user_error('wrong_number_of_lines', number)
+        if number > self.number_of_lines:
+            raise StatementValidateError(
+                gettext('account_statement'
+                    '.msg_statement_wrong_number_of_lines_remove',
+                    statement=self.rec_name,
+                    n=number - self.number_of_lines))
+        elif number < self.number_of_lines:
+            raise StatementValidateError(
+                gettext('account_statement'
+                    '.msg_statement_wrong_number_of_lines_remove',
+                    statement=self.rec_name,
+                    n=self.number_of_lines - number))
 
     @classmethod
     @ModelView.button
@@ -420,6 +482,7 @@ class Statement(Workflow, ModelSQL, ModelView):
     def validate_statement(cls, statements):
         pool = Pool()
         Line = pool.get('account.statement.line')
+        Warning = pool.get('res.user.warning')
 
         for statement in statements:
             getattr(statement, 'validate_%s' % statement.validation)()
@@ -435,7 +498,10 @@ class Statement(Workflow, ModelSQL, ModelView):
                 ])
         if common_lines:
             warning_key = '_'.join(str(l.id) for l in common_lines)
-            cls.raise_user_warning(warning_key, 'paid_invoice_draft_statement')
+            if Warning.check(warning_key):
+                raise StatementValidateWarning(warning_key,
+                    gettext('account_statement'
+                        '.msg_statement_paid_invoice_draft'))
             Line.write(common_lines, {
                     'invoice': None,
                     })
@@ -541,15 +607,21 @@ class Statement(Workflow, ModelSQL, ModelView):
     @ModelView.button
     @Workflow.transition('posted')
     def post(cls, statements):
-        StatementLine = Pool().get('account.statement.line')
+        pool = Pool()
+        Lang = pool.get('ir.lang')
+        StatementLine = pool.get('account.statement.line')
         for statement in statements:
             for origin in statement.origins:
                 if origin.pending_amount:
-                    cls.raise_user_error('post_with_pending_amount', {
-                            'origin': origin.rec_name,
-                            'amount': origin.pending_amount,
-                            'statement': statement.rec_name,
-                            })
+                    lang = Lang.get()
+                    amount = lang.currency(
+                        origin.pending_amount, statement.journal.currency)
+                    raise StatementPostError(
+                        gettext('account_statement'
+                            '.msg_statement_post_pending_amount',
+                            statement=statement.rec_name,
+                            amount=amount,
+                            origin=origin.rec_name))
 
         lines = [l for s in statements for l in s.lines]
         StatementLine.post_move(lines)
@@ -595,7 +667,8 @@ def origin_mixin(_states, _depends):
             'account.account', "Account",
             domain=[
                 ('company', '=', Eval('company', 0)),
-                ('kind', '!=', 'view'),
+                ('type', '!=', None),
+                ('closed', '!=', True),
                 ],
             context={
                 'date': Eval('date'),
@@ -653,6 +726,7 @@ class Line(
                 ('state', '!=', '')),
             ],
         states=_states,
+        context={'with_payment': False},
         depends=['party', 'account'] + _depends)
     origin = fields.Many2One('account.statement.origin', 'Origin',
         readonly=True,
@@ -675,6 +749,11 @@ class Line(
                     })
             cls.date.depends.append('origin')
         cls.account.required = True
+        t = cls.__table__()
+        cls._sql_constraints += [
+            ('check_statement_line_amount', Check(t, t.amount != 0),
+                'account_statement.msg_line_amount_non_zero'),
+            ]
 
     @classmethod
     def __register__(cls, module):
@@ -1008,8 +1087,17 @@ class Origin(origin_mixin(_states, _depends), ModelSQL, ModelView):
             digits=(16, Eval('_parent_statement', {})
                 .get('currency_digits', 2))),
         'on_change_with_pending_amount', searcher='search_pending_amount')
-    informations = fields.Dict(
-        'account.statement.origin.information', "Informations", readonly=True)
+    information = fields.Dict(
+        'account.statement.origin.information', "Information", readonly=True)
+
+    @classmethod
+    def __register__(cls, module_name):
+        table = cls.__table_handler__(module_name)
+
+        # Migration from 5.0: rename informations into information
+        table.column_rename('informations', 'information')
+
+        super(Origin, cls).__register__(module_name)
 
     @fields.depends('statement')
     def on_change_with_statement_id(self, name=None):
