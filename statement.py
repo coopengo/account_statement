@@ -749,18 +749,14 @@ class Line(
                     })
             cls.date.depends.append('origin')
         cls.account.required = True
-        t = cls.__table__()
-        cls._sql_constraints += [
-            ('check_statement_line_amount', Check(t, t.amount != 0),
-                'account_statement.msg_line_amount_non_zero'),
-            ]
 
     @classmethod
     def __register__(cls, module):
         super().__register__(module)
         table_h = cls.__table_handler__(module)
 
-        # Migration from 5.0: Allow amount of zero
+        # JMO: Migration from 5.0: Allow amount of zero
+        # cf : https://support.coopengo.com/issues/8931
         table_h.drop_constraint('check_statement_line_amount')
 
     @fields.depends('amount', 'party', 'invoice', 'date')
