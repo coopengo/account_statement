@@ -8,8 +8,6 @@ from trytond.transaction import Transaction
 from trytond.pool import Pool
 from trytond.pyson import Eval
 
-__all__ = ['Journal']
-
 
 class Journal(ModelSQL, ModelView):
     'Statement Journal'
@@ -56,9 +54,8 @@ class Journal(ModelSQL, ModelView):
 
     @classmethod
     def __register__(cls, module_name):
-        TableHandler = backend.get('TableHandler')
         cursor = Transaction().connection.cursor()
-        table = TableHandler(cls, module_name)
+        table = backend.TableHandler(cls, module_name)
         sql_table = cls.__table__()
         journal_account = Table('account_journal_account')
 
@@ -69,9 +66,9 @@ class Journal(ModelSQL, ModelView):
         # Migration from 4.8: new account field
         if created_account and table.table_exist('account_journal_account'):
             value = journal_account.select(journal_account.credit_account,
-                where=((journal_account.journal == sql_table.journal) &
-                    (journal_account.credit_account ==
-                        journal_account.debit_account)))
+                where=((journal_account.journal == sql_table.journal)
+                    & (journal_account.credit_account
+                        == journal_account.debit_account)))
             # Don't use UPDATE FROM because SQLite does not support it.
             cursor.execute(*sql_table.update([sql_table.account], [value]))
 

@@ -5,11 +5,13 @@ from operator import itemgetter
 
 from sql.operators import Concat
 
+from trytond.i18n import gettext
+from trytond.model import ModelView
 from trytond.pool import PoolMeta, Pool
 from trytond.transaction import Transaction
 from trytond.tools import grouped_slice, reduce_ids
 
-__all__ = ['Journal', 'Move']
+from trytond.modules.account.exceptions import PostError
 
 
 class Journal(metaclass=PoolMeta):
@@ -55,3 +57,17 @@ class Move(metaclass=PoolMeta):
     @classmethod
     def _get_origin(cls):
         return super(Move, cls)._get_origin() + ['account.statement']
+
+    @classmethod
+    @ModelView.button
+    def post(cls, moves):
+        pool = Pool()
+        Statement = pool.get('account.statement')
+        for move in moves:
+            if (isinstance(move.origin, Statement)
+                    and move.origin.state != 'posted'):
+                raise PostError(
+                    gettext('account_statement.msg_post_statement_move',
+                        move=move.rec_name,
+                        statement=move.origin.rec_name))
+        super().post(moves)
