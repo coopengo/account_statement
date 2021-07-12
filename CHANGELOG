@@ -1,3 +1,12 @@
+Version 6.0.0 - 2021-05-03
+* Bug fixes (see mercurial logs for details)
+* Warn user when posting a statement with cancelled or paid invoices
+* Fill move line's origin with statement line
+
+Version 5.8.0 - 2020-11-02
+* Bug fixes (see mercurial logs for details)
+* Remove support for Python 3.5
+* Rename statement state from cancel to cancelled
 * Fix merge issues in aggregated line
 
 Version 5.6.0 - 2020-05-04

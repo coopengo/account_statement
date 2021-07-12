@@ -10,6 +10,11 @@ msgctxt "field:account.statement,company:"
 msgid "Company"
 msgstr "Фирма"
 
+#, fuzzy
+msgctxt "field:account.statement,currency:"
+msgid "Currency"
+msgstr "Валута"
+
 msgctxt "field:account.statement,currency_digits:"
 msgid "Currency Digits"
 msgstr "Цифри за валута"
@@ -133,6 +138,16 @@ msgctxt "field:account.statement.line,company:"
 msgid "Company"
 msgstr "Фирма"
 
+#, fuzzy
+msgctxt "field:account.statement.line,currency:"
+msgid "Currency"
+msgstr "Валута"
+
+#, fuzzy
+msgctxt "field:account.statement.line,currency_digits:"
+msgid "Currency Digits"
+msgstr "Цифри за валута"
+
 msgctxt "field:account.statement.line,date:"
 msgid "Date"
 msgstr "Дата"
@@ -232,6 +247,16 @@ msgid "Company"
 msgstr "Фирма"
 
 #, fuzzy
+msgctxt "field:account.statement.origin,currency:"
+msgid "Currency"
+msgstr "Валута"
+
+#, fuzzy
+msgctxt "field:account.statement.origin,currency_digits:"
+msgid "Currency Digits"
+msgstr "Цифри за валута"
+
+#, fuzzy
 msgctxt "field:account.statement.origin,date:"
 msgid "Date"
 msgstr "Дата"
@@ -308,9 +333,10 @@ msgctxt "model:account.statement.origin.information,name:"
 msgid "Statement Origin Information"
 msgstr ""
 
+#, fuzzy
 msgctxt "model:ir.action,name:act_line_group_form"
-msgid "Statement Line Groups"
-msgstr "Statement Line Groups"
+msgid "Line Groups"
+msgstr "Line Groups"
 
 msgctxt "model:ir.action,name:act_line_groups_form"
 msgid "Line Groups"
@@ -336,8 +362,8 @@ msgstr "Всички отчети"
 
 #, fuzzy
 msgctxt "model:ir.action,name:act_statement_journal_form"
-msgid "Statement Journals"
-msgstr "Statement Journals"
+msgid "Journals"
+msgstr "Дневник"
 
 #, fuzzy
 msgctxt "model:ir.action,name:act_statement_line_move"
@@ -411,6 +437,12 @@ msgctxt "model:ir.message,text:msg_statement_delete_cancel"
 msgid "To delete statement \"%(statement)s\" you must cancel it."
 msgstr ""
 
+msgctxt "model:ir.message,text:msg_statement_invoice_paid_cancelled"
+msgid ""
+"The validation of the statements will remove already paid or cancelled "
+"invoices from the statements' lines."
+msgstr ""
+
 msgctxt "model:ir.message,text:msg_statement_paid_invoice_draft"
 msgid ""
 "The validation of the statements will remove paid invoices from other "
@@ -467,29 +499,18 @@ msgctxt "model:ir.model.button,string:statement_validate_button"
 msgid "Validate"
 msgstr "Validate"
 
-msgctxt "model:ir.rule.group,name:rule_group_line_group"
-msgid "User in statement's company"
+msgctxt "model:ir.rule.group,name:rule_group_statement_companies"
+msgid "User in companies"
 msgstr ""
 
-msgctxt "model:ir.rule.group,name:rule_group_statement"
-msgid "User in company"
+msgctxt "model:ir.rule.group,name:rule_group_statement_journal_companies"
+msgid "User in companies"
 msgstr ""
 
-msgctxt "model:ir.rule.group,name:rule_group_statement_journal"
-msgid "User in company"
-msgstr ""
-
-msgctxt "model:ir.rule.group,name:rule_group_statement_line"
-msgid "User in company"
-msgstr ""
-
-msgctxt "model:ir.rule.group,name:rule_group_statement_origin"
-msgid "User in statement's company"
-msgstr ""
-
+#, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_line_group_form"
-msgid "Statement Line Groups"
-msgstr "Statement Line Groups"
+msgid "Line Groups"
+msgstr "Line Groups"
 
 #, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_statement_configuration"
@@ -507,8 +528,8 @@ msgstr "Import Statement"
 
 #, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_statement_journal_form"
-msgid "Statement Journals"
-msgstr "Statement Journals"
+msgid "Journals"
+msgstr "Дневник"
 
 #, fuzzy
 msgctxt "model:ir.ui.menu,name:menu_statements"
@@ -532,7 +553,7 @@ msgstr "Сума"
 
 #, fuzzy
 msgctxt "report:account.statement:"
-msgid "Canceled"
+msgid "Cancelled"
 msgstr "Отказан"
 
 #, fuzzy
@@ -585,8 +606,9 @@ msgctxt "selection:account.journal,type:"
 msgid "Statement"
 msgstr "Отчет"
 
+#, fuzzy
 msgctxt "selection:account.statement,state:"
-msgid "Canceled"
+msgid "Cancelled"
 msgstr "Отказан"
 
 msgctxt "selection:account.statement,state:"

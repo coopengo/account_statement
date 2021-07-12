@@ -1,5 +1,6 @@
 # This file is part of Tryton.  The COPYRIGHT file at the top level of
 # this repository contains the full copyright notices and license terms.
+import hashlib
 from decimal import Decimal
 from collections import namedtuple, defaultdict
 from itertools import groupby
@@ -71,12 +72,9 @@ class Statement(Workflow, ModelSQL, ModelView):
     _number_depends = _depends + ['validation']
 
     name = fields.Char('Name', required=True)
-    company = fields.Many2One('company.company', 'Company', required=True,
-        select=True, states=_states, domain=[
-            ('id', If(Eval('context', {}).contains('company'), '=', '!='),
-                Eval('context', {}).get('company', -1)),
-            ],
-        depends=_depends)
+    company = fields.Many2One(
+        'company.company', "Company", required=True, select=True,
+        states=_states, depends=_depends)
     journal = fields.Many2One('account.statement.journal', 'Journal',
         required=True, select=True,
         domain=[
@@ -86,6 +84,8 @@ class Statement(Workflow, ModelSQL, ModelView):
             'readonly': (Eval('state') != 'draft') | Eval('lines', [0]),
             },
         depends=['state', 'company'])
+    currency = fields.Function(fields.Many2One(
+            'currency.currency', "Currency"), 'on_change_with_currency')
     currency_digits = fields.Function(fields.Integer('Currency Digits'),
         'on_change_with_currency_digits')
     date = fields.Date('Date', required=True, select=True)
@@ -123,7 +123,7 @@ class Statement(Workflow, ModelSQL, ModelView):
     state = fields.Selection([
             ('draft', "Draft"),
             ('validated', "Validated"),
-            ('cancel', "Canceled"),
+            ('cancelled', "Cancelled"),
             ('posted', "Posted"),
             ], "State", readonly=True, select=True)
     validation = fields.Function(fields.Char('Validation'),
@@ -142,14 +142,14 @@ class Statement(Workflow, ModelSQL, ModelView):
         cls._order[0] = ('id', 'DESC')
         cls._transitions |= set((
                 ('draft', 'validated'),
-                ('draft', 'cancel'),
+                ('draft', 'cancelled'),
                 ('validated', 'posted'),
-                ('validated', 'cancel'),
-                ('cancel', 'draft'),
+                ('validated', 'cancelled'),
+                ('cancelled', 'draft'),
                 ))
         cls._buttons.update({
                 'draft': {
-                    'invisible': Eval('state') != 'cancel',
+                    'invisible': Eval('state') != 'cancelled',
                     'depends': ['state'],
                     },
                 'validate_statement': {
@@ -165,7 +165,7 @@ class Statement(Workflow, ModelSQL, ModelView):
                     'depends': ['state'],
                     },
                 'reconcile': {
-                    'invisible': Eval('state').in_(['draft', 'cancel']),
+                    'invisible': Eval('state').in_(['draft', 'cancelled']),
                     'readonly': ~Eval('to_reconcile'),
                     'depends': ['state', 'to_reconcile'],
                     },
@@ -192,6 +192,11 @@ class Statement(Workflow, ModelSQL, ModelView):
         cursor.execute(*sql_table.update([sql_table.name],
                 [sql_table.id.cast(cls.name.sql_type().base)],
                 where=sql_table.name == Null))
+
+        # Migration from 5.6: rename state cancel to cancelled
+        cursor.execute(*sql_table.update(
+                [sql_table.state], ['cancelled'],
+                where=sql_table.state == 'cancel'))
 
     @staticmethod
     def default_company():
@@ -230,6 +235,11 @@ class Statement(Workflow, ModelSQL, ModelView):
 
         statement, = statements
         self.start_balance = statement.end_balance
+
+    @fields.depends('journal')
+    def on_change_with_currency(self, name=None):
+        if self.journal:
+            return self.journal.currency.id
 
     @fields.depends('journal')
     def on_change_with_currency_digits(self, name=None):
@@ -413,8 +423,8 @@ class Statement(Workflow, ModelSQL, ModelView):
 
     @classmethod
     def view_attributes(cls):
-        return [
-            ('/tree', 'visual', If(Eval('state') == 'cancel', 'muted', '')),
+        return super().view_attributes() + [
+            ('/tree', 'visual', If(Eval('state') == 'cancelled', 'muted', '')),
             ]
 
     @classmethod
@@ -422,7 +432,7 @@ class Statement(Workflow, ModelSQL, ModelView):
         # Cancel before delete
         cls.cancel(statements)
         for statement in statements:
-            if statement.state != 'cancel':
+            if statement.state != 'cancelled':
                 raise AccessError(
                     gettext('account_statement.msg_statement_delete_cancel',
                         statement=statement.rec_name))
@@ -489,19 +499,34 @@ class Statement(Workflow, ModelSQL, ModelView):
         pool = Pool()
         Line = pool.get('account.statement.line')
         Warning = pool.get('res.user.warning')
-
+        paid_cancelled_invoice_lines = []
         for statement in statements:
             getattr(statement, 'validate_%s' % statement.validation)()
+            paid_cancelled_invoice_lines.extend(l for l in statement.lines
+                if l.invoice and l.invoice.state in {'cancelled', 'paid'})
+
+        if paid_cancelled_invoice_lines:
+            warning_key = ('%s.statement_paid_cancelled_invoice_lines' %
+                    hashlib.md5(str(paid_cancelled_invoice_lines).encode(
+                        'utf-8')).hexdigest())
+            if Warning.check(warning_key):
+                raise StatementValidateWarning(warning_key,
+                    gettext('account_statement'
+                        '.msg_statement_invoice_paid_cancelled'))
+            Line.write(paid_cancelled_invoice_lines, {
+                    'invoice': None,
+                    })
 
         cls.create_move(statements)
 
         cls.write(statements, {
                 'state': 'validated',
                 })
-        common_lines = Line.search([
+        common_lines = [l for l in Line.search([
                 ('statement.state', '=', 'draft'),
-                ('invoice.state', '=', 'paid'),
+                ('invoice.state', 'in', ['posted', 'paid']),
                 ])
+            if l.invoice.reconciled]
         if common_lines:
             warning_key = '_'.join(str(l.id) for l in common_lines)
             if Warning.check(warning_key):
@@ -635,7 +660,7 @@ class Statement(Workflow, ModelSQL, ModelView):
 
     @classmethod
     @ModelView.button
-    @Workflow.transition('cancel')
+    @Workflow.transition('cancelled')
     def cancel(cls, statements):
         StatementLine = Pool().get('account.statement.line')
 
@@ -666,11 +691,18 @@ def origin_mixin(_states, _depends):
             "Date", required=True, states=_states, depends=_depends)
         amount = fields.Numeric(
             "Amount", required=True,
-            digits=(16, Eval('_parent_statement', {})
-                .get('currency_digits', 2)),
-            states=_states, depends=_depends)
+            digits=(16, Eval('currency_digits', 2)),
+            states=_states, depends=_depends + ['currency_digits'])
+        currency = fields.Function(fields.Many2One(
+                'currency.currency', "Currency"), 'on_change_with_currency')
+        currency_digits = fields.Function(fields.Integer(
+                "Currency Digits"), 'on_change_with_currency_digits')
         party = fields.Many2One(
-            'party.party', "Party", states=_states, depends=_depends)
+            'party.party', "Party", states=_states,
+            context={
+                'company': Eval('company', -1),
+                },
+            depends=_depends + ['company'])
         account = fields.Many2One(
             'account.account', "Account",
             domain=[
@@ -684,6 +716,11 @@ def origin_mixin(_states, _depends):
             states=_states, depends=_depends + ['company', 'date'])
         description = fields.Char(
             "Description", states=_states, depends=_depends)
+
+        @classmethod
+        def __setup__(cls):
+            super().__setup__()
+            cls.__access__.add('statement')
 
         @classmethod
         def get_statement_states(cls):
@@ -704,6 +741,16 @@ def origin_mixin(_states, _depends):
         @classmethod
         def search_company(cls, name, clause):
             return [('statement.' + clause[0],) + tuple(clause[1:])]
+
+        @fields.depends('statement', '_parent_statement.journal')
+        def on_change_with_currency(self, name=None):
+            if self.statement and self.statement.journal:
+                return self.statement.journal.currency.id
+
+        @fields.depends('statement', '_parent_statement.journal')
+        def on_change_with_currency_digits(self, name=None):
+            if self.statement and self.statement.journal:
+                return self.statement.journal.currency.digits
 
     return Mixin
 
@@ -877,19 +924,9 @@ class Line(
     @classmethod
     def reconcile(cls, move_lines):
         pool = Pool()
-        Currency = pool.get('currency.currency')
-        Lang = pool.get('ir.lang')
         Invoice = pool.get('account.invoice')
         MoveLine = pool.get('account.move.line')
 
-        # Try to group as much possible the write of payment lines on invoices
-        def write_invoice_payments(invoice_payments):
-            to_write = []
-            for invoice, lines in invoice_payments.items():
-                to_write.append([invoice])
-                to_write.append({'payment_lines': [('add', lines)]})
-            Invoice.write(*to_write)
-            invoice_payments.clear()
         invoice_payments = defaultdict(list)
 
         to_reconcile = []
@@ -900,30 +937,13 @@ class Line(
             # Write previous invoice payments to have them when calling
             # get_reconcile_lines_for_amount
             if line.invoice in invoice_payments:
-                write_invoice_payments(invoice_payments)
-
-            with Transaction().set_context(date=line.invoice.currency_date):
-                amount_to_pay = Currency.compute(line.invoice.currency,
-                    line.invoice.amount_to_pay,
-                    line.statement.journal.currency)
-            if abs(amount_to_pay) < abs(line.amount):
-
-                lang, = Lang.search([
-                        ('code', '=', Transaction().language),
-                        ])
-
-                amount = Lang.format(lang,
-                    '%.' + str(line.statement.journal.currency.digits) + 'f',
-                    line.amount, True)
-                cls.raise_user_error('amount_greater_invoice_amount_to_pay',
-                        error_args=(amount,))
-
-            with Transaction().set_context(date=line.invoice.currency_date):
-                amount = Currency.compute(line.statement.journal.currency,
-                    line.amount, line.statement.company.currency)
+                Invoice.add_payment_lines(invoice_payments)
+                invoice_payments.clear()
+                MoveLine.reconcile(*to_reconcile)
+                to_reconcile.clear()
 
             reconcile_lines = line.invoice.get_reconcile_lines_for_amount(
-                amount)
+                move_line.credit - move_line.debit)
 
             assert move_line.account == line.invoice.account
 
@@ -931,7 +951,7 @@ class Line(
             if not reconcile_lines[1]:
                 to_reconcile.append(reconcile_lines[0] + [move_line])
         if invoice_payments:
-            write_invoice_payments(invoice_payments)
+            Invoice.add_payment_lines(invoice_payments)
         if to_reconcile:
             MoveLine.reconcile(*to_reconcile)
 
@@ -974,6 +994,7 @@ class Line(
             second_currency = None
 
         return MoveLine(
+            origin=self,
             description=self.description,
             debit=amount < zero and -amount or zero,
             credit=amount >= zero and amount or zero,
@@ -1013,6 +1034,7 @@ class LineGroup(ModelSQL, ModelView):
     @classmethod
     def __setup__(cls):
         super(LineGroup, cls).__setup__()
+        cls.__access__.add('statement')
         cls._order.insert(0, ('date', 'DESC'))
 
     @classmethod
@@ -1189,11 +1211,8 @@ class ReconcileStatement(Wizard):
     start = StateAction('account.act_reconcile')
 
     def do_start(self, action):
-        pool = Pool()
-        Statement = pool.get('account.statement')
-        statements = Statement.browse(Transaction().context['active_ids'])
-        lines = sum(([int(l) for l in s.lines_to_reconcile]
-                for s in statements), [])
+        lines = sum(
+            ([int(l) for l in s.lines_to_reconcile] for s in self.records), [])
         return action, {
             'model': 'account.move.line',
             'ids': lines,

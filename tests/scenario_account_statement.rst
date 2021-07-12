@@ -17,7 +17,7 @@ Imports::
     ...     set_fiscalyear_invoice_sequences, create_payment_term
     >>> today = datetime.date.today()
 
-Install account_statement and account_invoice::
+Activate modules::
 
     >>> config = activate_modules(['account_statement', 'account_invoice'])
 
@@ -117,10 +117,12 @@ Create statement::
     >>> Statement = Model.get('account.statement')
     >>> StatementLine = Model.get('account.statement.line')
     >>> Sequence = Model.get('ir.sequence')
+    >>> SequenceType = Model.get('ir.sequence.type')
     >>> AccountJournal = Model.get('account.journal')
 
+    >>> sequence_type, = SequenceType.find([('name', '=', "Account Journal")])
     >>> sequence = Sequence(name='Satement',
-    ...     code='account.journal',
+    ...     sequence_type=sequence_type,
     ...     company=company,
     ... )
     >>> sequence.save()
@@ -230,7 +232,7 @@ Cancel statement::
 
     >>> statement.click('cancel')
     >>> statement.state
-    'cancel'
+    'cancelled'
     >>> [l.move for l in statement.lines if l.move]
     []
 
