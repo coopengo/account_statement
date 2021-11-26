@@ -877,19 +877,9 @@ class Line(
     @classmethod
     def reconcile(cls, move_lines):
         pool = Pool()
-        Currency = pool.get('currency.currency')
-        Lang = pool.get('ir.lang')
         Invoice = pool.get('account.invoice')
         MoveLine = pool.get('account.move.line')
 
-        # Try to group as much possible the write of payment lines on invoices
-        def write_invoice_payments(invoice_payments):
-            to_write = []
-            for invoice, lines in invoice_payments.items():
-                to_write.append([invoice])
-                to_write.append({'payment_lines': [('add', lines)]})
-            Invoice.write(*to_write)
-            invoice_payments.clear()
         invoice_payments = defaultdict(list)
 
         to_reconcile = []
@@ -900,30 +890,13 @@ class Line(
             # Write previous invoice payments to have them when calling
             # get_reconcile_lines_for_amount
             if line.invoice in invoice_payments:
-                write_invoice_payments(invoice_payments)
-
-            with Transaction().set_context(date=line.invoice.currency_date):
-                amount_to_pay = Currency.compute(line.invoice.currency,
-                    line.invoice.amount_to_pay,
-                    line.statement.journal.currency)
-            if abs(amount_to_pay) < abs(line.amount):
-
-                lang, = Lang.search([
-                        ('code', '=', Transaction().language),
-                        ])
-
-                amount = Lang.format(lang,
-                    '%.' + str(line.statement.journal.currency.digits) + 'f',
-                    line.amount, True)
-                cls.raise_user_error('amount_greater_invoice_amount_to_pay',
-                        error_args=(amount,))
-
-            with Transaction().set_context(date=line.invoice.currency_date):
-                amount = Currency.compute(line.statement.journal.currency,
-                    line.amount, line.statement.company.currency)
+                Invoice.add_payment_lines(invoice_payments)
+                invoice_payments.clear()
+                MoveLine.reconcile(*to_reconcile)
+                to_reconcile.clear()
 
             reconcile_lines = line.invoice.get_reconcile_lines_for_amount(
-                amount)
+                move_line.credit - move_line.debit)
 
             assert move_line.account == line.invoice.account
 
@@ -931,7 +904,7 @@ class Line(
             if not reconcile_lines[1]:
                 to_reconcile.append(reconcile_lines[0] + [move_line])
         if invoice_payments:
-            write_invoice_payments(invoice_payments)
+            Invoice.add_payment_lines(invoice_payments)
         if to_reconcile:
             MoveLine.reconcile(*to_reconcile)
 
