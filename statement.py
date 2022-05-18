@@ -672,6 +672,20 @@ class Statement(Workflow, ModelSQL, ModelView):
     def reconcile(cls, statements):
         pass
 
+    @classmethod
+    def copy(cls, statements, default=None):
+        default = default.copy() if default is not None else {}
+        new_statements = []
+        for origins, sub_statements in groupby(
+                statements, key=lambda s: bool(s.origins)):
+            sub_statements = list(sub_statements)
+            sub_default = default.copy()
+            if origins:
+                sub_default.setdefault('lines')
+            new_statements.extend(super().copy(
+                    statements, default=sub_default))
+        return new_statements
+
 
 def origin_mixin(_states, _depends):
     class Mixin:
@@ -774,6 +788,7 @@ class Line(
         depends=['company'])
     invoice = fields.Many2One('account.invoice', 'Invoice',
         domain=[
+            ('company', '=', Eval('company', -1)),
             If(Bool(Eval('party')), [('party', '=', Eval('party'))], []),
             If(Bool(Eval('account')), [('account', '=', Eval('account'))], []),
             If(Eval('statement_state') == 'draft',
@@ -782,7 +797,7 @@ class Line(
             ],
         states=_states,
         context={'with_payment': False},
-        depends=['party', 'account'] + _depends)
+        depends=['company', 'party', 'account'] + _depends)
     origin = fields.Many2One('account.statement.origin', 'Origin',
         readonly=True,
         states={
@@ -1155,6 +1170,12 @@ class Origin(origin_mixin(_states, _depends), ModelSQL, ModelView):
                     table.amount - Coalesce(Sum(line.amount), 0), value),
                 group_by=table.id))
         return [('id', 'in', query)]
+
+    @classmethod
+    def copy(cls, origins, default=None):
+        default = default.copy() if default is not None else {}
+        default.setdefault('lines')
+        return super().copy(origins, default=default)
 
 
 del _states, _depends
