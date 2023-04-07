@@ -132,8 +132,10 @@ class Statement(Workflow, ModelSQL, ModelView):
         super(Statement, cls).__setup__()
         cls._order[0] = ('id', 'DESC')
         cls._transitions |= set((
-                ('draft', 'posted'),
+                ('draft', 'validated'),
                 ('draft', 'cancelled'),
+                ('validated', 'posted'),
+                ('validated', 'cancelled'),
                 ('cancelled', 'draft'),
                 ))
         cls._buttons.update({
@@ -141,12 +143,16 @@ class Statement(Workflow, ModelSQL, ModelView):
                     'invisible': Eval('state') != 'cancelled',
                     'depends': ['state'],
                     },
-                'post': {
+                'validate_statement': {
                     'invisible': Eval('state') != 'draft',
                     'depends': ['state'],
                     },
+                'post': {
+                    'invisible': Eval('state') != 'validated',
+                    'depends': ['state'],
+                    },
                 'cancel': {
-                    'invisible': ~Eval('state').in_(['draft']),
+                    'invisible': ~Eval('state').in_(['draft', 'validated']),
                     'depends': ['state'],
                     },
                 'reconcile': {
@@ -457,6 +463,8 @@ class Statement(Workflow, ModelSQL, ModelView):
                     n=self.number_of_lines - number))
 
     @classmethod
+    @ModelView.button
+    @Workflow.transition('validated')
     def validate_statement(cls, statements):
         pool = Pool()
         Line = pool.get('account.statement.line')
@@ -602,7 +610,6 @@ class Statement(Workflow, ModelSQL, ModelView):
         pool = Pool()
         Lang = pool.get('ir.lang')
         StatementLine = pool.get('account.statement.line')
-        cls.validate_statement(statements)
         for statement in statements:
             for origin in statement.origins:
                 if origin.pending_amount:
