@@ -198,17 +198,6 @@ Validate statement::
     >>> statement.state
     'validated'
 
-Try posting a move::
-
-    >>> statement_line = statement.lines[0]
-
-We do not create moves in validate anymore::
-
-statement_line.move.click('post')  # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    trytond.modules.account.exceptions.PostError: ...
-
 Cancel statement::
 
     >>> statement.click('cancel')
@@ -358,6 +347,10 @@ Testing the use of an invoice in multiple statements::
     >>> statement2.save()
 
     >>> statement1.click('dummy_validate_method')
+    >>> statement1.click('post') # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    StatementValidateWarning: ...
     >>> statement1.state
     'validated'
 
@@ -386,14 +379,14 @@ Testing balance validation::
     >>> line.amount = Decimal('60.00')
     >>> line.account = receivable
     >>> line.party = customer
-    >>> statement.click('dummy_validate_method')  # doctest: +IGNORE_EXCEPTION_DETAIL
-
+    >>> statement.click('dummy_validate_method')
     >>> second_line = statement.lines.new()
     >>> second_line.date = today
     >>> second_line.amount = Decimal('40.00')
     >>> second_line.account = receivable
     >>> second_line.party = customer
     >>> statement.click('dummy_validate_method')
+    >>> statement.click('post')
 
 Testing amount validation::
 
@@ -412,7 +405,7 @@ Testing amount validation::
     >>> line.amount = Decimal('50.00')
     >>> line.account = receivable
     >>> line.party = customer
-    >>> statement.click('dummy_validate_method')  # doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> statement.click('dummy_validate_method')
 
     >>> second_line = statement.lines.new()
     >>> second_line.date = today
@@ -420,6 +413,7 @@ Testing amount validation::
     >>> second_line.account = receivable
     >>> second_line.party = customer
     >>> statement.click('dummy_validate_method')
+    >>> statement.click('post')
 
 Test number of lines validation::
 
@@ -438,7 +432,7 @@ Test number of lines validation::
     >>> line.amount = Decimal('50.00')
     >>> line.account = receivable
     >>> line.party = customer
-    >>> statement.click('dummy_validate_method')  # doctest: +IGNORE_EXCEPTION_DETAIL
+    >>> statement.click('dummy_validate_method')
 
     >>> second_line = statement.lines.new()
     >>> second_line.date = today
