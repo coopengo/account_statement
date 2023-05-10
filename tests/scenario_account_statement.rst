@@ -346,20 +346,20 @@ Testing the use of an invoice in multiple statements::
     >>> statement_line.related_to = customer_invoice4
     >>> statement2.save()
 
+    >>> Model.get('res.user.warning')(user=config.user,
+    ...     name=str(statement2.lines[0].id), always=True).save()
+
     >>> statement1.click('dummy_validate_method')
-    >>> statement1.click('post') # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    StatementValidateWarning: ...
+    >>> statement1.click('post')
     >>> statement1.state
-    'validated'
+    'posted'
 
     >>> statement1.reload()
     >>> bool(statement1.lines[0].related_to)
     True
     >>> statement2.reload()
     >>> bool(statement2.lines[0].related_to)
-    True
+    False
 
 Testing balance validation::
 
@@ -380,6 +380,11 @@ Testing balance validation::
     >>> line.account = receivable
     >>> line.party = customer
     >>> statement.click('dummy_validate_method')
+    >>> statement.click('post')  # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    StatementValidateError: ...
+
     >>> second_line = statement.lines.new()
     >>> second_line.date = today
     >>> second_line.amount = Decimal('40.00')
@@ -406,6 +411,10 @@ Testing amount validation::
     >>> line.account = receivable
     >>> line.party = customer
     >>> statement.click('dummy_validate_method')
+    >>> statement.click('post') # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    StatementValidateError: ...
 
     >>> second_line = statement.lines.new()
     >>> second_line.date = today
@@ -433,6 +442,11 @@ Test number of lines validation::
     >>> line.account = receivable
     >>> line.party = customer
     >>> statement.click('dummy_validate_method')
+    >>> statement.click('post')   # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+    ...
+    StatementValidateError: ...
+
 
     >>> second_line = statement.lines.new()
     >>> second_line.date = today
